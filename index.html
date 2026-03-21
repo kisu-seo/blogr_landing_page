@@ -1,4 +1,21 @@
 <!DOCTYPE html>
+<!--
+  ╔══════════════════════════════════════════════════════════════╗
+  ║            Blogr — Landing Page (index.html)               ║
+  ║                                                              ║
+  ║  기술 스택: HTML5 시맨틱 마크업 + Tailwind CSS (CDN)         ║
+  ║             Vanilla JS (script.js) / 별도 CSS 파일 없음      ║
+  ║                                                              ║
+  ║  반응형 전략: Mobile-First                                   ║
+  ║    기본값 → 모바일 (375px)                                   ║
+  ║    md:     → 태블릿 (768px~)                                 ║
+  ║    lg:     → 데스크톱 (1024px~)                              ║
+  ║                                                              ║
+  ║  UI 상태 제어 원리:                                          ║
+  ║  CSS 파일 없이 Tailwind의 'hidden' 클래스를                  ║
+  ║  JS의 classList.add/remove 로만 모든 표시/숨김을 제어합니다. ║
+  ╚══════════════════════════════════════════════════════════════╝
+-->
 <html lang="ko">
 
 <head>
@@ -14,422 +31,461 @@
   <link href="https://fonts.googleapis.com/css2?family=Overpass:wght@300;600&family=Ubuntu:wght@400;700&display=swap"
     rel="stylesheet" />
 
-  <!-- Tailwind CSS Play CDN: 빌드 없이 브라우저에서 바로 Tailwind 사용 -->
+  <!-- Tailwind CSS Play CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- Tailwind 커스텀 설정: style-guide.md의 디자인 토큰을 Tailwind theme에 등록 -->
+  <!-- Tailwind 커스텀 설정 -->
   <script>
     tailwind.config = {
       theme: {
         extend: {
-          /* 브랜드 색상: style-guide.md의 HEX 값을 그대로 등록 */
           colors: {
-            'brand-red': '#FF505C', /* Red 500: 주요 강조색 */
-            'brand-red-lt': '#FF7B86', /* Red 400: 호버 상태 */
-            'brand-red-pale': '#F9F6F6', /* Red 50: 아주 연한 배경 */
-            'brand-blue': '#1F3E5A', /* Blue 900 */
-            'gray-950': '#24242C', /* 푸터 배경 */
-            'gray-brand': '#4C5862', /* 본문 텍스트 */
-            'gray-mid': '#878D92', /* 보조 텍스트 */
-            'gray-soft': '#E7E7E7', /* 구분선, 연한 배경 */
-            'purple-950': '#2D2E40', /* 어두운 보라 (그라디언트 시작) */
-            'purple-900': '#3E4062', /* 보라 (그라디언트 끝) */
-            'purple-800': '#52526F', /* 중간 보라 */
+            'brand-red':      '#FF505C',
+            'brand-red-lt':   '#FF7B86',
+            'brand-red-pale': '#F9F6F6',
+            'brand-blue':     '#1F3E5A',
+            'gray-950':       '#24242C',
+            'gray-brand':     '#4C5862',
+            'gray-mid':       '#878D92',
+            'gray-soft':      '#E7E7E7',
+            'purple-950':     '#2D2E40',
+            'purple-900':     '#3E4062',
+            'purple-800':     '#52526F',
           },
-          /* 폰트 패밀리 등록 */
           fontFamily: {
-            'overpass': ['Overpass', 'sans-serif'], /* 제목, 본문 */
-            'ubuntu': ['Ubuntu', 'sans-serif'],   /* 내비게이션, 버튼 */
+            'overpass': ['Overpass', 'sans-serif'],
+            'ubuntu':   ['Ubuntu', 'sans-serif'],
           },
-          /* 스페이싱: style-guide.md의 8px 단위 토큰을 Tailwind 단위로 매핑 */
-          /* Tailwind 기본 단위: 1 = 4px. 예) sp-200(16px) = 4 → 이미 Tailwind 기본값 */
+          /* 스페이싱 토큰: 8px 단위 (sp-100 = 8px, sp-200 = 16px ...) */
           spacing: {
-            'sp-100': '8px',
-            'sp-200': '16px',
-            'sp-300': '24px',
-            'sp-400': '32px',
-            'sp-500': '40px',
-            'sp-600': '48px',
-            'sp-700': '56px',
-            'sp-800': '64px',
-            'sp-900': '72px',
-            'sp-1000': '80px',
+            'sp-100': '8px', 'sp-200': '16px', 'sp-300': '24px',
+            'sp-400': '32px', 'sp-500': '40px', 'sp-600': '48px',
+            'sp-700': '56px', 'sp-800': '64px', 'sp-900': '72px', 'sp-1000': '80px',
           },
-          /* 커스텀 border-radius: 섹션 모서리 장식 */
-          borderRadius: {
-            '100px': '100px',
-          },
-          /* 커스텀 박스 섀도우 */
-          boxShadow: {
-            'dropdown': '0 20px 40px rgba(0, 0, 0, 0.2)',
-          },
-          /* 반응형 최대 너비 */
-          maxWidth: {
-            'container': '1110px',
-          },
+          borderRadius: { '100px': '100px' },
+          boxShadow:    { 'dropdown': '0 20px 40px rgba(0, 0, 0, 0.2)' },
+          maxWidth:     { 'container': '1110px' },
         },
       },
     };
   </script>
 
   <!--
-    최소한의 인라인 스타일:
-    SVG 배경 패턴은 Tailwind CDN의 임의값(Arbitrary Values)으로
-    처리하기 어렵기 때문에 여기서만 예외적으로 style 태그를 사용합니다.
-    비유: 집 설계도(Tailwind)로 대부분 짓지만, 특수 벽화(SVG 패턴)만
-    직접 손으로 그리는 것과 같아요.
+    【예외적 <style> 태그 사용 이유 — Why?】
+    SVG 배경 패턴의 background-position / background-size 값은
+    화면 크기별로 픽셀 단위로 정밀하게 달라집니다.
+    Tailwind CDN의 임의값(Arbitrary Values)으로는 이처럼 복잡한
+    반응형 background 속성을 표현하기 어렵기 때문에,
+    이 <style> 블록만 예외적으로 허용합니다.
+
+    이 외의 모든 스타일은 Tailwind 유틸리티 클래스로만 처리합니다.
+    비유: 95%는 조립식 가구(Tailwind)로 해결하고,
+          특수 치수의 부품(SVG 배경 위치)만 직접 제작하는 것과 같아요.
   -->
   <style>
-    /* 히어로 섹션 배경: 모바일용 SVG 패턴 + 오렌지→레드 그라디언트 */
+    /* ══ 히어로 섹션 배경 (.hero-bg) ══════════════════════════════
+       두 개의 배경 레이어를 겹쳐 사용합니다:
+       레이어 1: SVG 패턴 (모바일/데스크톱용 파일 전환)
+       레이어 2: 오렌지→레드 선형 그라디언트
+
+       background-size 첫 번째 값(%)이 패턴 크기,
+       두 번째 값(cover)이 그라디언트 크기를 각각 제어합니다.
+       화면이 커질수록 패턴 크기는 작아지고, 위치가 달라져
+       디자인 시안과 동일하게 보이도록 미세 조정되었습니다.
+    ═══════════════════════════════════════════════════════════ */
+
+    /* 모바일 기본: 모바일 전용 SVG, 패턴 크기 355%, 위치 35% 33% */
     .hero-bg {
       background-image: url('images/bg-pattern-intro-mobile.svg'), linear-gradient(135deg, #FF8F71 0%, #FF3E55 100%);
       background-repeat: no-repeat;
       background-position: 35% 33%;
-      /* 디자인 시안의 위치 값 적용 */
       background-size: 355%, cover;
-      /* 정확한 패턴 크기 355% 적용 */
     }
-
-    /* 태블릿 이상: 배경 패턴의 사이즈와 위치를 정밀하게 조절 (디자인 시안 기준) */
+    /* 태블릿: 데스크톱용 SVG로 교체, 크기 385%, 위치 조정 */
     @media (min-width: 768px) {
       .hero-bg {
         background-image: url('images/bg-pattern-intro-desktop.svg'), linear-gradient(135deg, #FF8F71 0%, #FF3E55 100%);
-        background-size: 385%, cover;           /* 패턴 크기를 385%로 늘려 태블릿 화면에 최적화 */
-        background-position: 31% 52%, center;  /* 패턴 위치를 31% 52%로 이동하여 콘텐츠와 정렬 */
+        background-size: 385%, cover;
+        background-position: 31% 52%, center;
+      }
+    }
+    /* 데스크톱: 화면이 넓어지므로 패턴 크기를 225%로 축소, 위치 미세 조정 */
+    @media (min-width: 1024px) {
+      .hero-bg {
+        background-size: 225%, cover;
+        background-position: 26% 52%, center;
       }
     }
 
-    /* 인프라 섹션 배경 (모바일 기본 설정) */
+    /* ══ 인프라 섹션 배경 (.infra-bg) ════════════════════════════
+       원형 SVG 패턴 + 다크 보라 그라디언트를 겹쳐 사용합니다.
+       패턴의 Y축 위치를 마이너스(-) 값으로 설정해 위쪽으로 올려
+       스마트폰 일러스트와 자연스럽게 겹쳐 보이도록 합니다.
+       데스크톱에서는 X축도 음수로 설정해 패턴이 왼쪽으로 치우쳐
+       텍스트 콘텐츠와 겹치지 않도록 배치합니다.
+    ═══════════════════════════════════════════════════════════ */
+
+    /* 모바일: 원형 패턴 600px, 중앙에서 위로 240px 올림 */
     .infra-bg {
       background-image: url('images/bg-pattern-circles.svg'), linear-gradient(135deg, #2D2E40 0%, #3F4164 100%);
       background-repeat: no-repeat;
       background-position: center -240px, center;
       background-size: 600px, cover;
     }
-
-    /* 태블릿: 배경 원형 패턴의 위치와 크기를 최종적으로 정밀 조정 (디자인 시안 업데이트 반영) */
+    /* 태블릿: 패턴 603px로 미세 확대, 위로 320px 올림 */
     @media (min-width: 768px) {
       .infra-bg {
-        background-position: center -320px, center; /* 패턴의 중심을 -320px로 이동하여 일러스트와 완벽한 조화 */
-        background-size: 603px, cover;             /* 패턴 크기를 603px로 미세 조정 */
+        background-position: center -320px, center;
+        background-size: 603px, cover;
       }
     }
-
-    /* 데스크톱: 원 패턴 왼쪽으로 이동 */
+    /* 데스크톱: 패턴 983px로 대폭 확대, 왼쪽(-190px)·위(-488px)로 이동 */
     @media (min-width: 1024px) {
       .infra-bg {
-        background-position: -350px -250px, center;
-        background-size: 800px, cover;
+        background-position: -190px -488px, center;
+        background-size: 983px, cover;
       }
     }
 
-    /* 화살표 아이콘 회전 애니메이션 */
-    .arrow-rotate {
-      transition: transform 0.3s ease-in-out;
-    }
+    /* ── 드롭다운/아코디언 화살표 회전 애니메이션 ────────────────────
+       JS가 부모 버튼의 aria-expanded 속성을 'true'로 바꾸는 순간,
+       CSS 속성 선택자 [aria-expanded="true"] 가 .arrow-rotate 에 적용되어
+       화살표가 180도 회전합니다. JS와 CSS가 aria 속성을 다리로 연결된 구조.
+    ─────────────────────────────────────────────────────────── */
+    .arrow-rotate { transition: transform 0.3s ease-in-out; }
+    [aria-expanded="true"] .arrow-rotate { transform: rotate(180deg); }
 
-    [aria-expanded="true"] .arrow-rotate {
-      transform: rotate(180deg);
-    }
-
-    /* 모바일 메뉴 전용 스타일: 아코디언 서브메뉴가 열렸을 때 버튼의 불투명도를 75%로 조절 */
+    /* ── 모바일 아코디언 열렸을 때 버튼 불투명도 ────────────────────
+       열린 아코디언 버튼의 불투명도를 75%로 낮춰 "이미 선택된 항목"임을
+       시각적으로 표현합니다. 역시 JS의 aria-expanded 속성 변경에 CSS가 반응하는 구조.
+    ─────────────────────────────────────────────────────────── */
     #mobile-menu button[aria-expanded="true"] {
       opacity: 0.75;
       transition: opacity 0.3s ease-in-out;
-      /* 부드럽게 색상이 변하도록 애니메이션 추가 */
     }
   </style>
 </head>
 
 <body class="font-overpass text-base font-light leading-7 tracking-[0.6px] text-gray-brand bg-white overflow-x-hidden">
 
-  <!-- =============================================
-       헤더 & 내비게이션
-  ============================================= -->
+  <!-- ╔════════════════════════════════════════════════════════════╗
+       ║  SECTION 1 : HEADER & NAVIGATION                         ║
+       ║  역할: 로고 + 내비게이션 바 (고정 위치, 최상위 z-index)   ║
+       ║                                                          ║
+       ║  【Why absolute + z-[100]?】                              ║
+       ║  헤더를 페이지 레이아웃 흐름에서 꺼내(absolute) 히어로    ║
+       ║  섹션 배경 위에 겹쳐 띄웁니다.                           ║
+       ║  z-index 100을 부여해 히어로 배경(z-0)보다 항상 위에      ║
+       ║  표시되고, 모바일 메뉴 카드(z-300)보다는 아래에 위치합니다.║
+       ╚════════════════════════════════════════════════════════════╝ -->
   <header class="absolute top-0 left-0 right-0 z-[100]">
-    <!-- 헤더 내비게이션: 모바일(상단 56px, 좌우 24px), 태블릿(좌우 40px), 데스크톱(상하 40px, 좌우 80px) 패딩 적용 -->
     <nav
-      class="flex items-center justify-between pt-sp-700 px-sp-300 md:px-sp-500 lg:px-sp-1000 lg:py-sp-500 max-w-container mx-auto lg:gap-sp-600"
+      class="flex items-center justify-between mx-auto
+             pt-sp-700 px-sp-300
+             md:px-sp-500
+             lg:px-0 lg:pt-[59px] lg:max-w-[1112px] lg:gap-sp-800"
       aria-label="메인 내비게이션">
 
-      <!-- 로고: 모바일 화면에서의 크기 81.66x32px, 데스크톱(lg) 화면에서는 101x32px로 유지 -->
+      <!-- 로고 -->
       <a href="/" aria-label="Blogr 홈으로 이동">
-        <img src="images/logo.svg" alt="Blogr" class="w-[81.66px] h-[32px] lg:w-[101px] lg:h-[32px]" />
+        <img src="images/logo.svg" alt="Blogr" class="w-[81.66px] h-[32px] lg:w-auto lg:h-[39.43px]" />
       </a>
 
-      <!-- 모바일 햄버거 버튼: 레이아웃 시프트 방지 및 아이콘 우측 밀착
-           버튼의 뼈대(w-10 h-10 flex items-center justify-end)를 강제 고정해 터치 범위를 확보하면서 아이콘은 오른쪽 끝에 맞춥니다. -->
-      <button class="flex items-center justify-end w-10 h-10 p-0 lg:hidden" id="hamburger-btn" aria-expanded="false"
-        aria-controls="mobile-menu" aria-label="메뉴 열기">
-        <!-- 아이콘 이미지: 크기는 JS가 제어(24x24 or 32x18)하며, 부모 flex 컨테이너 덕분에 핏이 맞춰집니다. -->
-        <img src="images/icon-hamburger.svg" alt="" aria-hidden="true" width="32" height="18" />
+      <!--
+        [리팩토링] 햄버거 버튼 — 이중 아이콘 구조
+        기존: JS가 img.src를 직접 교체 (유지보수 어려움)
+        개선: 두 아이콘을 HTML에 모두 두고 JS가 hidden 클래스만 토글
+        비유: 간판 교체가 아니라, 앞뒤에 다른 그림이 있는 간판을 뒤집는 방식
+      -->
+      <button id="hamburger-btn"
+        class="flex items-center justify-end w-10 h-10 p-0 lg:hidden"
+        aria-expanded="false" aria-controls="mobile-menu" aria-label="메뉴 열기">
+        <!-- 햄버거 아이콘: 메뉴 닫힘 상태에서 표시 -->
+        <img id="icon-hamburger" src="images/icon-hamburger.svg" alt="" aria-hidden="true" width="32" height="18" />
+        <!-- 닫기(X) 아이콘: 메뉴 열림 상태에서 표시 (초기 숨김) -->
+        <img id="icon-close" src="images/icon-close.svg" alt="" aria-hidden="true" width="24" height="24" class="hidden" />
       </button>
 
-      <!-- 데스크톱 중앙 드롭다운 메뉴: 모바일 숨김, 데스크톱 표시 -->
-      <div class="hidden lg:flex items-center gap-sp-400 flex-1" role="menubar">
+      <!--
+        데스크톱 드롭다운 메뉴 영역 (모바일: hidden, 데스크톱: flex 전환)
+        【A11y】 role="menubar": WAI-ARIA 표준에 따라 이 div가 메뉴바 역할임을
+        스크린 리더에 선언합니다. 내부 버튼들은 role="menuitem"으로 구성됩니다.
+        【Why flex-1?】 로고(고정 너비)와 로그인 버튼(고정 너비) 사이에서
+        남은 공간을 전부 차지하도록 flex-1을 적용합니다.
+      -->
+      <div class="hidden lg:flex flex-1 items-center gap-sp-400" role="menubar">
 
-        <!-- Product 드롭다운 -->
+        <!--
+          드롭다운 컨테이너 — 공통 구조 설명
+          【Why relative?】 자식 드롭다운 목록(absolute)의 기준점이 되기 위해
+          부모 div에 relative를 부여합니다. absolute 요소는 가장 가까운
+          position:relative 조상을 기준으로 위치를 계산합니다.
+          【A11y】 role="none": 이 div는 레이아웃 목적으로만 존재하며
+          스크린 리더가 불필요하게 읽지 않도록 역할을 제거합니다.
+        -->
+
+        <!-- Product 드롭다운 ─────────────────────────────────────── -->
         <div class="relative" role="none">
-          <button
-            class="flex items-center gap-2 font-ubuntu font-normal text-base text-white/85 hover:text-white hover:underline transition-all duration-300 py-1"
+          <!--
+            드롭다운 토글 버튼
+            【A11y】 aria-expanded="false": JS가 이 값을 'true'/'false'로 바꿔
+                    스크린 리더에게 하위 메뉴의 열림 상태를 알립니다.
+            【A11y】 aria-haspopup="true": 이 버튼 아래 팝업 메뉴가 있음을 예고합니다.
+            【A11y】 aria-controls="dd-product": 제어할 대상 요소의 id를 명시합니다.
+            【CSS】 .arrow-rotate: JS가 aria-expanded를 바꾸면 CSS가 자동으로 화살표를 회전시킵니다.
+          -->
+          <button class="flex items-center gap-2 py-1 font-ubuntu font-normal text-base text-white/85
+                         hover:text-white hover:underline transition-all duration-300"
             aria-expanded="false" aria-haspopup="true" aria-controls="dd-product" role="menuitem">
             Product
             <img src="images/icon-arrow-light.svg" alt="" aria-hidden="true" class="arrow-rotate w-[10px]" />
           </button>
-          <!-- 드롭다운 메뉴: JS가 hidden 클래스를 뗐다붙였다(toggle) -->
-          <ul
-            class="hidden absolute top-[calc(100%+12px)] left-0 min-w-[180px] bg-white rounded-lg shadow-dropdown p-sp-300 z-[400]"
-            id="dd-product" role="menu" aria-label="Product 하위 메뉴">
-            <li><a href="#" role="menuitem"
-                class="block font-ubuntu font-normal text-[15px] text-gray-brand hover:font-bold hover:text-gray-950 px-2 py-[6px] whitespace-nowrap transition-all duration-300">Overview</a>
-            </li>
-            <li><a href="#" role="menuitem"
-                class="block font-ubuntu font-normal text-[15px] text-gray-brand hover:font-bold hover:text-gray-950 px-2 py-[6px] whitespace-nowrap transition-all duration-300">Pricing</a>
-            </li>
-            <li><a href="#" role="menuitem"
-                class="block font-ubuntu font-normal text-[15px] text-gray-brand hover:font-bold hover:text-gray-950 px-2 py-[6px] whitespace-nowrap transition-all duration-300">Marketplace</a>
-            </li>
-            <li><a href="#" role="menuitem"
-                class="block font-ubuntu font-normal text-[15px] text-gray-brand hover:font-bold hover:text-gray-950 px-2 py-[6px] whitespace-nowrap transition-all duration-300">Features</a>
-            </li>
-            <li><a href="#" role="menuitem"
-                class="block font-ubuntu font-normal text-[15px] text-gray-brand hover:font-bold hover:text-gray-950 px-2 py-[6px] whitespace-nowrap transition-all duration-300">Integrations</a>
-            </li>
+          <!--
+            드롭다운 목록 — 초기 상태: hidden (JS가 addClass/removeClass로 제어)
+            【Why top-[calc(100%+12px)]?】 버튼 바로 아래(100%)에서 12px 추가 여백을 두어
+            버튼과 메뉴 사이에 시각적 호흡을 줍니다.
+            【A11y】 role="menu" + aria-label: 스크린 리더가 이 ul을 "Product 메뉴"로 읽게 합니다.
+          -->
+          <ul id="dd-product" role="menu" aria-label="Product 하위 메뉴"
+            class="hidden absolute top-[calc(100%+12px)] left-0 z-[400]
+                   min-w-[180px] rounded-lg shadow-dropdown bg-white p-sp-300">
+            <li><a href="#" role="menuitem" class="block px-2 py-[6px] font-ubuntu font-normal text-[15px] text-gray-brand whitespace-nowrap hover:font-bold hover:text-gray-950 transition-all duration-300">Overview</a></li>
+            <li><a href="#" role="menuitem" class="block px-2 py-[6px] font-ubuntu font-normal text-[15px] text-gray-brand whitespace-nowrap hover:font-bold hover:text-gray-950 transition-all duration-300">Pricing</a></li>
+            <li><a href="#" role="menuitem" class="block px-2 py-[6px] font-ubuntu font-normal text-[15px] text-gray-brand whitespace-nowrap hover:font-bold hover:text-gray-950 transition-all duration-300">Marketplace</a></li>
+            <li><a href="#" role="menuitem" class="block px-2 py-[6px] font-ubuntu font-normal text-[15px] text-gray-brand whitespace-nowrap hover:font-bold hover:text-gray-950 transition-all duration-300">Features</a></li>
+            <li><a href="#" role="menuitem" class="block px-2 py-[6px] font-ubuntu font-normal text-[15px] text-gray-brand whitespace-nowrap hover:font-bold hover:text-gray-950 transition-all duration-300">Integrations</a></li>
           </ul>
         </div>
 
         <!-- Company 드롭다운 -->
         <div class="relative" role="none">
-          <button
-            class="flex items-center gap-2 font-ubuntu font-normal text-base text-white/85 hover:text-white hover:underline transition-all duration-300 py-1"
+          <button class="flex items-center gap-2 py-1 font-ubuntu font-normal text-base text-white/85
+                         hover:text-white hover:underline transition-all duration-300"
             aria-expanded="false" aria-haspopup="true" aria-controls="dd-company" role="menuitem">
             Company
             <img src="images/icon-arrow-light.svg" alt="" aria-hidden="true" class="arrow-rotate w-[10px]" />
           </button>
-          <ul
-            class="hidden absolute top-[calc(100%+12px)] left-0 min-w-[180px] bg-white rounded-lg shadow-dropdown p-sp-300 z-[400]"
-            id="dd-company" role="menu" aria-label="Company 하위 메뉴">
-            <li><a href="#" role="menuitem"
-                class="block font-ubuntu font-normal text-[15px] text-gray-brand hover:font-bold hover:text-gray-950 px-2 py-[6px] whitespace-nowrap transition-all duration-300">About</a>
-            </li>
-            <li><a href="#" role="menuitem"
-                class="block font-ubuntu font-normal text-[15px] text-gray-brand hover:font-bold hover:text-gray-950 px-2 py-[6px] whitespace-nowrap transition-all duration-300">Team</a>
-            </li>
-            <li><a href="#" role="menuitem"
-                class="block font-ubuntu font-normal text-[15px] text-gray-brand hover:font-bold hover:text-gray-950 px-2 py-[6px] whitespace-nowrap transition-all duration-300">Blog</a>
-            </li>
-            <li><a href="#" role="menuitem"
-                class="block font-ubuntu font-normal text-[15px] text-gray-brand hover:font-bold hover:text-gray-950 px-2 py-[6px] whitespace-nowrap transition-all duration-300">Careers</a>
-            </li>
+          <ul id="dd-company" role="menu" aria-label="Company 하위 메뉴"
+            class="hidden absolute top-[calc(100%+12px)] left-0 z-[400]
+                   min-w-[180px] rounded-lg shadow-dropdown bg-white p-sp-300">
+            <li><a href="#" role="menuitem" class="block px-2 py-[6px] font-ubuntu font-normal text-[15px] text-gray-brand whitespace-nowrap hover:font-bold hover:text-gray-950 transition-all duration-300">About</a></li>
+            <li><a href="#" role="menuitem" class="block px-2 py-[6px] font-ubuntu font-normal text-[15px] text-gray-brand whitespace-nowrap hover:font-bold hover:text-gray-950 transition-all duration-300">Team</a></li>
+            <li><a href="#" role="menuitem" class="block px-2 py-[6px] font-ubuntu font-normal text-[15px] text-gray-brand whitespace-nowrap hover:font-bold hover:text-gray-950 transition-all duration-300">Blog</a></li>
+            <li><a href="#" role="menuitem" class="block px-2 py-[6px] font-ubuntu font-normal text-[15px] text-gray-brand whitespace-nowrap hover:font-bold hover:text-gray-950 transition-all duration-300">Careers</a></li>
           </ul>
         </div>
 
         <!-- Connect 드롭다운 -->
         <div class="relative" role="none">
-          <button
-            class="flex items-center gap-2 font-ubuntu font-normal text-base text-white/85 hover:text-white hover:underline transition-all duration-300 py-1"
+          <button class="flex items-center gap-2 py-1 font-ubuntu font-normal text-base text-white/85
+                         hover:text-white hover:underline transition-all duration-300"
             aria-expanded="false" aria-haspopup="true" aria-controls="dd-connect" role="menuitem">
             Connect
             <img src="images/icon-arrow-light.svg" alt="" aria-hidden="true" class="arrow-rotate w-[10px]" />
           </button>
-          <ul
-            class="hidden absolute top-[calc(100%+12px)] left-0 min-w-[180px] bg-white rounded-lg shadow-dropdown p-sp-300 z-[400]"
-            id="dd-connect" role="menu" aria-label="Connect 하위 메뉴">
-            <li><a href="#" role="menuitem"
-                class="block font-ubuntu font-normal text-[15px] text-gray-brand hover:font-bold hover:text-gray-950 px-2 py-[6px] whitespace-nowrap transition-all duration-300">Contact</a>
-            </li>
-            <li><a href="#" role="menuitem"
-                class="block font-ubuntu font-normal text-[15px] text-gray-brand hover:font-bold hover:text-gray-950 px-2 py-[6px] whitespace-nowrap transition-all duration-300">Newsletter</a>
-            </li>
-            <li><a href="#" role="menuitem"
-                class="block font-ubuntu font-normal text-[15px] text-gray-brand hover:font-bold hover:text-gray-950 px-2 py-[6px] whitespace-nowrap transition-all duration-300">LinkedIn</a>
-            </li>
+          <ul id="dd-connect" role="menu" aria-label="Connect 하위 메뉴"
+            class="hidden absolute top-[calc(100%+12px)] left-0 z-[400]
+                   min-w-[180px] rounded-lg shadow-dropdown bg-white p-sp-300">
+            <li><a href="#" role="menuitem" class="block px-2 py-[6px] font-ubuntu font-normal text-[15px] text-gray-brand whitespace-nowrap hover:font-bold hover:text-gray-950 transition-all duration-300">Contact</a></li>
+            <li><a href="#" role="menuitem" class="block px-2 py-[6px] font-ubuntu font-normal text-[15px] text-gray-brand whitespace-nowrap hover:font-bold hover:text-gray-950 transition-all duration-300">Newsletter</a></li>
+            <li><a href="#" role="menuitem" class="block px-2 py-[6px] font-ubuntu font-normal text-[15px] text-gray-brand whitespace-nowrap hover:font-bold hover:text-gray-950 transition-all duration-300">LinkedIn</a></li>
           </ul>
         </div>
       </div>
 
-      <!-- 데스크톱 우측: 로그인 / 가입 버튼 -->
-      <div class="hidden lg:flex items-center gap-sp-300">
-        <a href="#"
-          class="font-ubuntu font-bold text-base text-white/85 hover:text-white transition-all duration-300">Login</a>
-        <!-- Sign Up 버튼: 흰 배경 + 빨간 글씨, 호버시 반전 -->
-        <a href="#"
-          class="font-ubuntu font-bold text-base text-brand-red bg-white rounded-full px-9 py-3 hover:bg-brand-red-lt hover:text-white transition-all duration-300">Sign
-          Up</a>
+      <!-- 데스크톱 우측 로그인/가입 버튼 -->
+      <div class="hidden lg:flex items-center gap-sp-400">
+        <a href="#" class="font-ubuntu font-bold text-base text-white/85 hover:text-white transition-all duration-300">Login</a>
+        <a href="#" class="rounded-full px-9 py-3 font-ubuntu font-bold text-base text-brand-red bg-white
+                           hover:bg-brand-red-lt hover:text-white transition-all duration-300">Sign Up</a>
       </div>
     </nav>
   </header>
 
-  <!-- 모바일 메뉴 오버레이 제거됨 (사용자 요청) -->
-
-  <!-- 모바일 메뉴 카드: 너비 324px 고정, 패딩은 좌우 24px(sp-300) / 상하 32px(sp-400) 적용 -->
+  <!-- ╔════════════════════════════════════════════════════════════╗
+       ║  SECTION 2 : MOBILE MENU CARD                            ║
+       ║  역할: 모바일/태블릿에서 햄버거 버튼 클릭 시 나타나는     ║
+       ║        플로팅 메뉴 카드 (데스크톱에서는 사용 안 함)        ║
+       ║                                                          ║
+       ║  【Why fixed + left-1/2 + -translate-x-1/2?】            ║
+       ║  fixed: 스크롤과 무관하게 뷰포트에 고정                   ║
+       ║  left-1/2 + -translate-x-1/2: 정확한 수평 중앙 정렬      ║
+       ║  (margin:auto는 fixed 요소에 적용 불가하기 때문)          ║
+       ║                                                          ║
+       ║  【A11y】 role="dialog" + aria-modal="true":              ║
+       ║  스크린 리더에게 이 요소가 모달 다이얼로그임을 알려        ║
+       ║  포커스 트랩 등 접근성 동작을 올바르게 유도합니다.        ║
+       ║                                                          ║
+       ║  초기 상태: hidden (JS가 classList.remove로 표시)         ║
+       ╚════════════════════════════════════════════════════════════╝ -->
   <div id="mobile-menu"
-    class="hidden fixed top-[110px] w-[324px] left-1/2 -translate-x-1/2 bg-white rounded-lg px-sp-300 py-sp-400 z-[300] shadow-dropdown"
+    class="hidden fixed top-[110px] left-1/2 -translate-x-1/2 z-[300]
+           w-[324px] md:w-[688px]
+           rounded-lg shadow-dropdown bg-white
+           px-sp-300 py-sp-400 md:pb-[82px]"
     role="dialog" aria-modal="true" aria-label="모바일 내비게이션 메뉴">
 
     <nav aria-label="모바일 내비게이션">
-      <!-- Product 아코디언: 하단 라인 제거 및 패딩 조정 (상단 0, 하단 32px)
-           텍스트 스타일: Preset 6 (Ubuntu 700, 16px) + brand-blue(#1F3E5A) 적용 -->
+
+      <!-- Product 아코디언 -->
       <div>
-        <button
-          class="flex items-center justify-center gap-sp-200 w-full pt-0 pb-sp-400 font-ubuntu font-bold text-base text-brand-blue transition-all duration-300"
+        <button class="flex items-center justify-center gap-sp-200 w-full pt-0 pb-sp-400
+                       font-ubuntu font-bold text-base text-brand-blue transition-all duration-300"
           aria-expanded="false" aria-controls="mob-product">
           Product
           <img src="images/icon-arrow-dark.svg" alt="" aria-hidden="true" class="arrow-rotate w-[10px]" />
         </button>
-        <!-- 서브메뉴: 상하 패딩 19px 적용 및 하단 마진 24px(sp-300) 설정 -->
-        <ul id="mob-product" class="hidden bg-gray-soft rounded mb-sp-300 py-[19px] text-center">
-          <li><a href="#"
-              class="block font-ubuntu font-normal text-base leading-[2] text-brand-blue/75 hover:font-bold hover:text-brand-blue px-sp-200 pt-0 pb-sp-100 transition-all duration-300">Overview</a>
-          </li>
-          <li><a href="#"
-              class="block font-ubuntu font-normal text-base leading-[2] text-brand-blue/75 hover:font-bold hover:text-brand-blue px-sp-200 pt-0 pb-sp-100 transition-all duration-300">Pricing</a>
-          </li>
-          <li><a href="#"
-              class="block font-ubuntu font-normal text-base leading-[2] text-brand-blue/75 hover:font-bold hover:text-brand-blue px-sp-200 pt-0 pb-sp-100 transition-all duration-300">Marketplace</a>
-          </li>
-          <li><a href="#"
-              class="block font-ubuntu font-normal text-base leading-[2] text-brand-blue/75 hover:font-bold hover:text-brand-blue px-sp-200 pt-0 pb-sp-100 transition-all duration-300">Features</a>
-          </li>
-          <li><a href="#"
-              class="block font-ubuntu font-normal text-base leading-[2] text-brand-blue/75 hover:font-bold hover:text-brand-blue px-sp-200 pt-0 pb-0 transition-all duration-300">Integrations</a>
-          </li>
+        <ul id="mob-product" class="hidden rounded mb-sp-300 py-[19px] text-center bg-gray-soft">
+          <li><a href="#" class="block px-sp-200 pt-0 pb-sp-100 font-ubuntu font-normal text-base leading-[2] text-brand-blue/75 hover:font-bold hover:text-brand-blue transition-all duration-300">Overview</a></li>
+          <li><a href="#" class="block px-sp-200 pt-0 pb-sp-100 font-ubuntu font-normal text-base leading-[2] text-brand-blue/75 hover:font-bold hover:text-brand-blue transition-all duration-300">Pricing</a></li>
+          <li><a href="#" class="block px-sp-200 pt-0 pb-sp-100 font-ubuntu font-normal text-base leading-[2] text-brand-blue/75 hover:font-bold hover:text-brand-blue transition-all duration-300">Marketplace</a></li>
+          <li><a href="#" class="block px-sp-200 pt-0 pb-sp-100 font-ubuntu font-normal text-base leading-[2] text-brand-blue/75 hover:font-bold hover:text-brand-blue transition-all duration-300">Features</a></li>
+          <li><a href="#" class="block px-sp-200 pt-0 pb-0 font-ubuntu font-normal text-base leading-[2] text-brand-blue/75 hover:font-bold hover:text-brand-blue transition-all duration-300">Integrations</a></li>
         </ul>
       </div>
 
-      <!-- Company 아코디언: 하단 라인 제거 및 패딩 조정 (상단 0, 하단 32px)
-           텍스트 스타일: Preset 6 (Ubuntu 700, 16px) + brand-blue(#1F3E5A) 적용 -->
+      <!-- Company 아코디언 -->
       <div>
-        <button
-          class="flex items-center justify-center gap-sp-200 w-full pt-0 pb-sp-400 font-ubuntu font-bold text-base text-brand-blue transition-all duration-300"
+        <button class="flex items-center justify-center gap-sp-200 w-full pt-0 pb-sp-400
+                       font-ubuntu font-bold text-base text-brand-blue transition-all duration-300"
           aria-expanded="false" aria-controls="mob-company">
           Company
           <img src="images/icon-arrow-dark.svg" alt="" aria-hidden="true" class="arrow-rotate w-[10px]" />
         </button>
-        <!-- 서브메뉴: 하단 마진 24px(sp-300) 설정 -->
-        <ul id="mob-company" class="hidden bg-gray-soft rounded mb-sp-300 py-sp-200 text-center">
-          <li><a href="#"
-              class="block font-ubuntu font-normal text-base leading-[2] text-brand-blue/75 hover:font-bold hover:text-brand-blue px-sp-200 pt-0 pb-sp-100 transition-all duration-300">About</a>
-          </li>
-          <li><a href="#"
-              class="block font-ubuntu font-normal text-base leading-[2] text-brand-blue/75 hover:font-bold hover:text-brand-blue px-sp-200 pt-0 pb-sp-100 transition-all duration-300">Team</a>
-          </li>
-          <li><a href="#"
-              class="block font-ubuntu font-normal text-base leading-[2] text-brand-blue/75 hover:font-bold hover:text-brand-blue px-sp-200 pt-0 pb-sp-100 transition-all duration-300">Blog</a>
-          </li>
-          <li><a href="#"
-              class="block font-ubuntu font-normal text-base leading-[2] text-brand-blue/75 hover:font-bold hover:text-brand-blue px-sp-200 pt-0 pb-0 transition-all duration-300">Careers</a>
-          </li>
+        <ul id="mob-company" class="hidden rounded mb-sp-300 py-sp-200 text-center bg-gray-soft">
+          <li><a href="#" class="block px-sp-200 pt-0 pb-sp-100 font-ubuntu font-normal text-base leading-[2] text-brand-blue/75 hover:font-bold hover:text-brand-blue transition-all duration-300">About</a></li>
+          <li><a href="#" class="block px-sp-200 pt-0 pb-sp-100 font-ubuntu font-normal text-base leading-[2] text-brand-blue/75 hover:font-bold hover:text-brand-blue transition-all duration-300">Team</a></li>
+          <li><a href="#" class="block px-sp-200 pt-0 pb-sp-100 font-ubuntu font-normal text-base leading-[2] text-brand-blue/75 hover:font-bold hover:text-brand-blue transition-all duration-300">Blog</a></li>
+          <li><a href="#" class="block px-sp-200 pt-0 pb-0 font-ubuntu font-normal text-base leading-[2] text-brand-blue/75 hover:font-bold hover:text-brand-blue transition-all duration-300">Careers</a></li>
         </ul>
       </div>
 
-      <!-- Connect 아코디언: 하단 라인 제거 및 패딩 조정 (상단 0, 하단 32px)
-           텍스트 스타일: Preset 6 (Ubuntu 700, 16px) + brand-blue(#1F3E5A) 적용 -->
+      <!-- Connect 아코디언 -->
       <div>
-        <button
-          class="flex items-center justify-center gap-sp-200 w-full pt-0 pb-sp-400 font-ubuntu font-bold text-base text-brand-blue transition-all duration-300"
+        <button class="flex items-center justify-center gap-sp-200 w-full pt-0 pb-sp-400
+                       font-ubuntu font-bold text-base text-brand-blue transition-all duration-300"
           aria-expanded="false" aria-controls="mob-connect">
           Connect
           <img src="images/icon-arrow-dark.svg" alt="" aria-hidden="true" class="arrow-rotate w-[10px]" />
         </button>
-        <!-- 서브메뉴: 하단 마진 24px(sp-300) 설정 -->
-        <ul id="mob-connect" class="hidden bg-gray-soft rounded mb-sp-300 py-sp-200 text-center">
-          <li><a href="#"
-              class="block font-ubuntu font-normal text-base leading-[2] text-brand-blue/75 hover:font-bold hover:text-brand-blue px-sp-200 pt-0 pb-sp-100 transition-all duration-300">Contact</a>
-          </li>
-          <li><a href="#"
-              class="block font-ubuntu font-normal text-base leading-[2] text-brand-blue/75 hover:font-bold hover:text-brand-blue px-sp-200 pt-0 pb-sp-100 transition-all duration-300">Newsletter</a>
-          </li>
-          <li><a href="#"
-              class="block font-ubuntu font-normal text-base leading-[2] text-brand-blue/75 hover:font-bold hover:text-brand-blue px-sp-200 pt-0 pb-0 transition-all duration-300">LinkedIn</a>
-          </li>
+        <ul id="mob-connect" class="hidden rounded mb-sp-300 py-sp-200 text-center bg-gray-soft">
+          <li><a href="#" class="block px-sp-200 pt-0 pb-sp-100 font-ubuntu font-normal text-base leading-[2] text-brand-blue/75 hover:font-bold hover:text-brand-blue transition-all duration-300">Contact</a></li>
+          <li><a href="#" class="block px-sp-200 pt-0 pb-sp-100 font-ubuntu font-normal text-base leading-[2] text-brand-blue/75 hover:font-bold hover:text-brand-blue transition-all duration-300">Newsletter</a></li>
+          <li><a href="#" class="block px-sp-200 pt-0 pb-0 font-ubuntu font-normal text-base leading-[2] text-brand-blue/75 hover:font-bold hover:text-brand-blue transition-all duration-300">LinkedIn</a></li>
         </ul>
       </div>
 
-      <!-- 구분선: 상하 마진을 24px(sp-300)로 넓혀 영역 구분을 명확히 설정 -->
+      <!-- 구분선 -->
       <hr class="border-gray-soft my-sp-300" />
-      <!-- 로그인/가입 영역 (로그인과 가입 버튼 사이 간격 24px 적용) -->
-      <div class="flex flex-col items-center gap-sp-300 p-0">
-        <!-- Login: 프리셋 6 (Ubuntu Bold, 16px) + Blue 900 색상 적용 -->
-        <a href="#"
-          class="font-ubuntu font-bold text-base text-brand-blue hover:text-brand-red transition-all duration-300">Login</a>
-        <!-- Sign Up: 그라디언트 배경 버튼 -->
-        <a href="#"
-          class="font-ubuntu font-bold text-base text-white rounded-full px-10 py-[14px] hover:opacity-75 transition-all duration-300"
+
+      <!-- 로그인/가입 버튼 -->
+      <div class="flex flex-col md:flex-row items-center md:justify-center gap-sp-300 p-0">
+        <a href="#" class="font-ubuntu font-bold text-base text-brand-blue hover:text-brand-red transition-all duration-300">Login</a>
+        <a href="#" class="rounded-full px-10 py-[14px] font-ubuntu font-bold text-base text-white hover:opacity-75 transition-all duration-300"
           style="background: linear-gradient(135deg, #FF8F71 0%, #FF3E55 100%);">Sign Up</a>
       </div>
     </nav>
   </div>
 
-  <!-- =============================================
-       메인 콘텐츠
-  ============================================= -->
-  <main id="main-content">
+  <!-- ╔════════════════════════════════════════════════════════════╗
+       ║  MAIN CONTENT                                            ║
+       ║  【Why overflow-x-hidden?】                              ║
+       ║  일러스트 이미지들이 lg:scale, lg:translate 등으로         ║
+       ║  부모 박스 밖으로 삐져나오는 Break-out 레이아웃을 사용합니다.║
+       ║  이때 가로 스크롤바가 생기는 것을 방지하기 위해            ║
+       ║  overflow-x-hidden을 <main>에 적용합니다.                 ║
+       ╚════════════════════════════════════════════════════════════╝ -->
+  <main id="main-content" class="overflow-x-hidden">
 
-    <section class="hero-bg relative text-center text-white overflow-hidden rounded-bl-100px
+    <!-- ╔═══════════════════════════════════════════════════════╗
+         ║  SECTION 3 : HERO                                   ║
+         ║  역할: 페이지 첫 인상 — 제목, 부제목, CTA 버튼        ║
+         ║                                                     ║
+         ║  【Why rounded-bl-100px?】                           ║
+         ║  디자인 시안에서 히어로 섹션 왼쪽 하단 모서리만      ║
+         ║  100px 반경으로 둥글게 처리합니다. 이 독특한 모서리  ║
+         ║  처리가 Blogr 브랜드의 시각적 아이덴티티입니다.      ║
+         ║                                                     ║
+         ║  【A11y】 aria-labelledby="hero-title":              ║
+         ║  스크린 리더가 이 section의 이름을 h1 텍스트로 읽어  ║
+         ║  "A modern publishing platform 섹션"으로 알게 됩니다.║
+         ╚═══════════════════════════════════════════════════════╝ -->
+    <section class="hero-bg relative overflow-hidden rounded-bl-100px text-center text-white
                     pt-[184px] pb-[154px]
-                    md:pt-[200px] md:pb-[130px]" aria-labelledby="hero-title">
-
-      <!-- 히어로 콘텐츠 내부: 모바일(318px), 태블릿(md:581px), 데스크톱(lg:900px) 최대 너비 정밀 제어 -->
-      <div class="max-w-[318px] md:max-w-[581px] mx-auto lg:max-w-[900px]">
-        <!-- 모바일 화면에서의 상하 여백을 각각 184px, 154px로 정밀하게 설정했습니다 -->
-        <!-- 메인 제목: 프리셋 1(64px, SemiBold) 적용 및 태블릿 하단 마진 32px(md:mb-sp-400) 설정 -->
+                    md:pt-[200px] md:pb-[130px]
+                    lg:pt-[227px] lg:pb-[156px]"
+      aria-labelledby="hero-title">
+      <div class="mx-auto max-w-[348px] md:max-w-[581px] lg:max-w-[900px]">
         <h1 id="hero-title"
-          class="font-overpass font-semibold text-[40px] leading-[1.25] tracking-[-1.2px] mb-sp-300 md:text-[64px] md:leading-none md:tracking-[-2px] md:mb-sp-400">
-          A modern <br class="hidden md:block" /> publishing platform
+          class="mb-sp-300 font-overpass font-semibold text-[40px] leading-[1.25] tracking-[-1.2px]
+                 md:mb-sp-400 md:text-[64px] md:leading-none md:tracking-[-2px]">
+          A modern <br class="hidden md:block lg:hidden" /> publishing platform
         </h1>
-        <!-- 부제목: 프리셋 4 적용, 100% 불투명도 및 태블릿 하단 마진 32px(md:mb-sp-400) 설정 -->
-        <p class="font-overpass font-light text-xl leading-[1.25] mb-sp-500 md:mb-sp-400">
+        <p class="mb-sp-500 font-overpass font-light text-xl leading-[1.25]
+                  md:mb-sp-400 lg:mb-sp-600">
           Grow your audience and build your online brand
         </p>
-        <!-- CTA 버튼 그룹 -->
-        <div class="flex justify-center flex-wrap gap-sp-200">
-          <!-- 주 버튼: 모바일 보더 1px(border), 데스크톱(md) 2px(border-2) 적용 -->
-          <a href="#"
-            class="flex items-center justify-center font-ubuntu font-bold text-base text-brand-red bg-white rounded-full w-[137px] h-[48px] border border-white md:border-2 hover:bg-transparent hover:text-white transition-all duration-300 ease-in-out">
+        <div class="flex flex-wrap justify-center gap-sp-200">
+          <a href="#" class="flex items-center justify-center w-[137px] h-[48px] rounded-full border border-white
+                            font-ubuntu font-bold text-base text-brand-red bg-white
+                            md:border-2 hover:bg-transparent hover:text-white transition-all duration-300 ease-in-out">
             Start for Free
           </a>
-          <!-- 보조 버튼: 모바일에서는 테두리 1px(border), 데스크톱(md) 이상은 2px(border-2) 적용 -->
-          <a href="#"
-            class="flex items-center justify-center font-ubuntu font-bold text-base text-white bg-transparent rounded-full w-[137px] h-[48px] border border-white md:border-2 hover:bg-white hover:text-brand-red transition-all duration-300 ease-in-out">
+          <a href="#" class="flex items-center justify-center w-[137px] h-[48px] rounded-full border border-white
+                            font-ubuntu font-bold text-base text-white bg-transparent
+                            md:border-2 hover:bg-white hover:text-brand-red transition-all duration-300 ease-in-out">
             Learn More
           </a>
         </div>
-      </div> <!-- // 히어로 콘텐츠 내부 div 종료 -->
-      </div> <!-- // 히어로 외부 컨테이너(max-w-container) div 종료 -->
+      </div>
     </section>
 
-    <!-- ── Editor 섹션: Designed for the future ── -->
-    <!-- 모바일(100px), 태블릿(md:81.44px), 데스크톱(100px) 하단 여백 정밀 제어 -->
-    <section class="overflow-hidden pt-[100px] pb-[100px] md:pb-[81.44px] text-center lg:text-left" aria-labelledby="editor-title">
-      <!-- 메인 제목: 태블릿(md) 화면에서 하단 마진 0 적용 -->
+    <!-- ╔═══════════════════════════════════════════════════════╗
+         ║  SECTION 4 : EDITOR — "Designed for the future"     ║
+         ║  역할: 에디터 기능 소개 (텍스트 2개 + SVG 일러스트)   ║
+         ║                                                     ║
+         ║  【Break-out 레이아웃 — Why scale + translate?】     ║
+         ║  에디터 일러스트가 데스크톱에서 lg:scale-[2.05]로    ║
+         ║  2배 이상 확대되고 lg:translate-x-[62%]로 우측으로  ║
+         ║  튀어나옵니다. 이 "삐져나오는" 효과가 의도적이며,   ║
+         ║  <main>의 overflow-x-hidden이 가로 스크롤을 막습니다.║
+         ║                                                     ║
+         ║  【Why lg:order-2 / lg:order-1?】                   ║
+         ║  HTML 순서는 이미지→텍스트이지만, 데스크톱에서는     ║
+         ║  시각적으로 텍스트(order-1)→이미지(order-2) 순으로  ║
+         ║  뒤집어 표시합니다. 이미지를 오른쪽에 배치하기 위함. ║
+         ╚═══════════════════════════════════════════════════════╝ -->
+    <section class="pt-[100px] pb-[100px] text-center
+                    md:pb-[81.44px]
+                    lg:mt-[71px] lg:mb-[76.5px] lg:pt-[80px] lg:pb-[200px] lg:text-left"
+      aria-labelledby="editor-title">
       <h2 id="editor-title"
-        class="font-overpass font-semibold text-[clamp(28px,6vw,40px)] leading-[1.25] tracking-[-1.2px] text-brand-blue mb-sp-700 md:mb-0 px-sp-300 lg:px-sp-1000 text-center">
+        class="mb-sp-700 px-sp-300 text-center
+               font-overpass font-semibold text-[clamp(28px,6vw,40px)] leading-[1.25] tracking-[-1.2px] text-brand-blue
+               md:mb-0
+               lg:mb-[89px] lg:px-sp-1000">
         Designed for the future
       </h2>
-
-      <!-- 내부: 모바일=이미지->텍스트 순서, 데스크톱=텍스트 왼쪽, 이미지 오른쪽 -->
-      <div class="lg:grid lg:grid-cols-2 lg:items-center lg:max-w-[1200px] lg:mx-auto lg:px-sp-1000 lg:gap-sp-600">
-
-        <!-- 에디터 이미지: 모바일(56px), 태블릿(md:32px), 데스크톱(lg:0) 하단 마진 정밀 제어 -->
-        <div
-          class="w-full max-w-[326px] md:max-w-[688px] mx-auto mb-sp-700 md:mb-sp-400 lg:max-w-[700px] lg:mb-0 lg:order-2 lg:relative lg:right-[-80px] lg:mx-0"
+      <div class="lg:grid lg:grid-cols-[540px_1fr] lg:items-center lg:max-w-[1200px] lg:m-0 lg:p-0 lg:pl-[165px] lg:gap-sp-600">
+        <!-- 에디터 이미지: 데스크톱에서 2.05배 확대 + 62% 우측 이동 -->
+        <div class="mx-auto mb-sp-700 w-full max-w-[326px]
+                    md:max-w-[688px] md:mb-sp-400
+                    lg:order-2 lg:mx-0 lg:mb-0 lg:max-w-none lg:scale-[2.05] lg:translate-x-[62%]"
           aria-hidden="true">
-          <!-- 모바일용 이미지: 부모 상자를 100% 채움 -->
-          <img src="images/illustration-editor-mobile.svg" alt="에디터 인터페이스 일러스트" class="w-full h-auto block lg:hidden" />
-          <!-- 데스크톱용 이미지: 부모 상자를 100% 채움 -->
+          <img src="images/illustration-editor-mobile.svg" alt="에디터 인터페이스 일러스트"
+            class="block w-full h-auto md:mt-0 lg:hidden" />
           <img src="images/illustration-editor-desktop.svg" alt="에디터 인터페이스 일러스트"
-            class="hidden lg:block w-full h-auto" />
+            class="hidden w-full h-auto lg:block" />
         </div>
-
-        <!-- 텍스트 블록: 모바일(56px), 태블릿(md:64px) 간격(gap) 정밀 제어 -->
-        <div class="flex flex-col gap-sp-700 md:gap-sp-800 px-sp-300 md:px-0 max-w-[318px] md:max-w-[540px] mx-auto lg:max-w-none lg:px-0 lg:order-1">
+        <!-- 텍스트 블록 -->
+        <div class="mx-auto flex flex-col gap-sp-700 max-w-[318px]
+                    md:max-w-[540px] md:gap-sp-800
+                    lg:order-1 lg:max-w-none lg:px-0">
           <article>
-            <!-- 소제목: 태블릿(md) 화면에서 가로 중앙(justify-center) 및 상단(items-start) 정렬 적용 -->
-            <h3 class="font-overpass font-semibold text-[28px] leading-none text-brand-blue mb-sp-200 h-[41px] flex items-start md:justify-center">
+            <h3 class="mb-sp-400 text-center font-overpass font-semibold text-[28px] leading-tight text-brand-blue lg:text-left">
               Introducing an extensible editor
             </h3>
-            <p class="font-overpass font-light text-base leading-[1.75] tracking-[0.5px] text-gray-brand">
+            <p class="font-overpass font-light text-base leading-[1.75] tracking-[0.5px] text-gray-brand lg:max-w-[540px]">
               Blogr features an exceedingly intuitive interface which lets you focus on one thing:
               creating content. The editor supports management of multiple blogs and allows easy
               manipulation of embeds such as images, videos, and Markdown. Extensibility with
@@ -437,11 +493,10 @@
             </p>
           </article>
           <article>
-            <!-- 소제목: 태블릿 가로 중앙 정렬 적용 -->
-            <h3 class="font-overpass font-semibold text-[28px] leading-none text-brand-blue mb-sp-200 h-[41px] flex items-start md:justify-center">
+            <h3 class="mb-sp-400 text-center font-overpass font-semibold text-[28px] leading-tight text-brand-blue lg:text-left">
               Robust content management
             </h3>
-            <p class="font-overpass font-light text-base leading-[1.75] tracking-[0.5px] text-gray-brand">
+            <p class="font-overpass font-light text-base leading-[1.75] tracking-[0.5px] text-gray-brand lg:max-w-[540px]">
               Flexible content management enables users to easily move through posts. Increase the
               usability of your blog by adding customized categories, sections, format, or flow.
               With this functionality, you're in full control.
@@ -451,27 +506,38 @@
       </div>
     </section>
 
-    <!-- 인프라 섹션: 모바일(mt-173px), 태블릿(md:mt-172px), 데스크톱(lg:mt-0) 상단 여백 정밀 제어 -->
-    <section class="infra-bg mt-[173px] md:mt-[172px] lg:mt-0 rounded-tr-[100px] rounded-bl-[100px] text-center text-white
-                    px-sp-300 pt-sp-1000 pb-[103.5px] md:pb-[55.5px]
-                    lg:flex lg:items-center lg:text-left lg:min-h-[400px] lg:px-sp-1000" aria-labelledby="infra-title">
-
-      <!-- 폰 일러스트: 모바일(mt-251px), 태블릿(md:mt-266px), 데스크톱(mt-0) 상단 여백 정밀 제어 -->
-      <div
-        class="w-full max-w-[380px] mx-auto mt-[-251px] md:mt-[-266px] mb-0 lg:max-w-[430px] lg:mt-0 lg:mx-0 lg:mr-sp-800 lg:flex-shrink-0 lg:translate-y-[-30px]"
+    <!-- ╔═══════════════════════════════════════════════════════╗
+         ║  SECTION 5 : INFRASTRUCTURE — "State of the Art"    ║
+         ║  역할: 인프라 강점 소개 (다크 배경 + 폰 일러스트)     ║
+         ║                                                     ║
+         ║  【Why 마이너스 마진 mt-[-251px]?】                  ║
+         ║  스마트폰 일러스트가 섹션 위쪽 경계를 뚫고 올라가    ║
+         ║  에디터 섹션과 시각적으로 겹쳐 보이는 효과를 줍니다. ║
+         ║  이 돌출 효과가 디자인 시안의 핵심 포인트입니다.     ║
+         ║                                                     ║
+         ║  【A11y】 일러스트 래퍼에 aria-hidden="true":        ║
+         ║  장식용 이미지 그룹을 스크린 리더가 읽지 않도록      ║
+         ║  래퍼 전체에 aria-hidden을 적용해 중복 낭독을 방지.  ║
+         ╚═══════════════════════════════════════════════════════╝ -->
+    <section class="infra-bg rounded-tr-[100px] rounded-bl-[100px] text-center text-white
+                    mt-[173px] px-sp-300 pt-sp-1000 pb-[103.5px]
+                    md:mt-[172px] md:pb-[55.5px]
+                    lg:mt-0 lg:flex lg:items-center lg:text-left lg:h-[400px] lg:pl-[185px] lg:pr-0"
+      aria-labelledby="infra-title">
+      <!-- 폰 일러스트: 섹션 위로 돌출 -->
+      <div class="mx-auto mb-0 mt-[-251px] w-full max-w-[380px]
+                  md:mt-[-266px]
+                  lg:mx-0 lg:mt-0 lg:mr-[110px] lg:max-w-[430px] lg:flex-shrink-0 lg:translate-y-[7px] lg:scale-125"
         aria-hidden="true">
-        <!-- 스마트폰 일러스트: 부모 상자를 100% 채움 -->
-        <img src="images/illustration-phones.svg" alt="스마트폰 앱 스크린샷 일러스트" class="w-full h-auto block" />
+        <img src="images/illustration-phones.svg" alt="스마트폰 앱 스크린샷 일러스트" class="block w-full h-auto" />
       </div>
-
-      <!-- 텍스트 영역: 모바일(32px), 태블릿(md:16px), 데스크톱(32px) 간격 정밀 제어 -->
-      <div class="flex flex-col gap-sp-400 md:gap-sp-200 lg:flex-1 lg:py-sp-900 px-0">
-        <!-- 메인 제목: Preset 2 (40px, SemiBold, 1.25em, -1.2px) 적용 -->
+      <!-- 텍스트 영역 -->
+      <div class="flex flex-col gap-sp-400 px-0 md:gap-sp-200 lg:flex-1 lg:p-0">
         <h2 id="infra-title" class="font-overpass font-semibold text-[40px] leading-[1.25] tracking-[-1.2px]">
           State of the Art Infrastructure
         </h2>
-        <!-- 본문 텍스트: 태블릿(md:540px) 너비 제한 및 중앙 정렬, 데스크톱(lg:제한없음) 복구 적용 -->
-        <p class="font-overpass font-light text-base leading-[1.75] tracking-[0.5px] text-white opacity-100 md:max-w-[540px] md:mx-auto lg:max-w-none lg:mx-0">
+        <p class="font-overpass font-light text-base leading-[1.75] tracking-[0.5px] text-white opacity-100
+                  md:max-w-[540px] md:mx-auto lg:max-w-[540px] lg:mx-0">
           With reliability and speed in mind, worldwide data centers provide the backbone for
           ultra-fast connectivity. This ensures your site will load instantly, no matter where
           your readers are, keeping your site competitive.
@@ -479,31 +545,46 @@
       </div>
     </section>
 
-    <!-- ── Laptop 섹션: Free, open, simple ── -->
-    <!-- Editor 섹션과 동일한 레이아웃 패턴 적용: pt-[100px]/pb-[100px], brand-blue 색상, gap-sp-700 -->`
-    <section class="overflow-hidden pt-[100px] pb-[100px] text-center lg:text-left" aria-labelledby="laptop-title">
-      <!-- 내부: 모바일=이미지->텍스트 순서: 데스크톱=2컬럼(이미지 왼쪽, 텍스트 오른쪽) -->
-      <div class="lg:flex lg:items-center lg:max-w-[1200px] lg:mx-auto lg:px-sp-1000 lg:gap-sp-600">
-
-        <!-- 랩톱 이미지: 크기와 정렬 제어권을 부모 div로 위임, img는 부모를 꽉 채우도록 설정 -->
-        <div
-          class="w-full max-w-[500px] mx-auto mb-sp-700 lg:max-w-[600px] lg:mb-0 lg:mx-0 lg:flex-shrink-0 lg:relative lg:left-[-80px]"
+    <!-- ╔═══════════════════════════════════════════════════════╗
+         ║  SECTION 6 : LAPTOP — "Free, open, simple"          ║
+         ║  역할: 노트북 기능 소개 (텍스트 2개 + SVG 일러스트)   ║
+         ║                                                     ║
+         ║  【랩톱 이미지 Break-out 레이아웃 — Why?】           ║
+         ║  lg:left-[-98px]: 이미지를 왼쪽으로 98px 돌출시켜   ║
+         ║  페이지 경계를 넘어서는 역동적인 레이아웃을 구현.    ║
+         ║  모바일/태블릿에서는 overflow-hidden으로 잘라내고,   ║
+         ║  데스크톱(lg:overflow-visible)에서만 돌출을 허용.    ║
+         ║                                                     ║
+         ║  【Why 모바일/데스크톱 이미지 분리?】                ║
+         ║  두 SVG는 최적화된 화면 크기가 다릅니다.            ║
+         ║  lg:hidden / lg:block 으로 각 해상도에 맞는 이미지를 ║
+         ║  정확히 교체합니다. (JS 없이 CSS만으로 전환)         ║
+         ╚═══════════════════════════════════════════════════════╝ -->
+    <section class="overflow-hidden text-center
+                    pt-[100px] pb-[100px]
+                    md:pt-[82px] md:pb-[80.24px]
+                    lg:pt-[115px] lg:pb-[123px] lg:text-left"
+      aria-labelledby="laptop-title">
+      <div class="lg:flex lg:items-center lg:max-w-[1275px] lg:h-[786px] lg:m-0 lg:p-0 lg:gap-[125px]">
+        <!-- 랩톱 이미지: 데스크톱에서 왼쪽으로 -98px 돌출 -->
+        <div class="mx-auto mb-sp-700 w-full max-w-[500px] overflow-hidden
+                    md:max-w-[699px] md:mb-sp-400
+                    lg:mx-0 lg:mb-0 lg:max-w-[600px] lg:flex-shrink-0 lg:relative lg:left-[-98px] lg:overflow-visible"
           aria-hidden="true">
-          <!-- 모바일용 이미지: 부모 상자를 100% 채움 -->
-          <img src="images/illustration-laptop-mobile.svg" alt="노트북 사용 일러스트" class="w-full h-auto block lg:hidden" />
-          <!-- 데스크톱용 이미지: 부모 상자를 100% 채움 -->
-          <img src="images/illustration-laptop-desktop.svg" alt="노트북 사용 일러스트" class="hidden lg:block w-full h-auto" />
+          <img src="images/illustration-laptop-mobile.svg" alt="노트북 사용 일러스트"
+            class="block w-full h-auto md:mt-0 md:scale-[1.1] lg:hidden" />
+          <img src="images/illustration-laptop-desktop.svg" alt="노트북 사용 일러스트"
+            class="hidden w-full h-auto lg:block lg:mt-0 lg:scale-[1.55]" />
         </div>
-
-        <!-- 텍스트 블록: 부모인 section의 여백을 활용하므로 여기서는 px-0으로 패딩을 제거 -->
+        <!-- 텍스트 블록 -->
         <div id="laptop-title"
-          class="w-full max-w-[318px] mx-auto flex flex-col gap-sp-700 px-0 lg:px-0 lg:max-w-none lg:flex-1">
+          class="mx-auto flex flex-col gap-sp-700 w-full max-w-[318px]
+                 md:max-w-[540px] md:gap-sp-800
+                 lg:flex-1 lg:max-w-[540px] lg:px-0">
           <article>
-            <!-- 소제목: 높이 41px 및 상단 정렬 적용 -->
-            <h3 class="font-overpass font-semibold text-[28px] leading-none text-brand-blue mb-sp-200 h-[41px] flex items-start">
+            <h3 class="mb-sp-400 text-center font-overpass font-semibold text-[28px] leading-tight text-brand-blue lg:text-left">
               Free, open, simple
             </h3>
-            <!-- 본문: Preset 5(16px, Light, 1.75em, 0.5px) 적용 -->
             <p class="font-overpass font-light text-base leading-[1.75] tracking-[0.5px] text-gray-brand">
               Blogr is a free and open source application backed by a large community of helpful
               developers. It supports features such as code syntax highlighting, RSS feeds, social
@@ -512,8 +593,7 @@
             </p>
           </article>
           <article>
-            <!-- 소제목: 높이 41px 및 상단 정렬 적용 -->
-            <h3 class="font-overpass font-semibold text-[28px] leading-none text-brand-blue mb-sp-200 h-[41px] flex items-start">
+            <h3 class="mb-sp-400 text-center font-overpass font-semibold text-[28px] leading-tight text-brand-blue lg:text-left">
               Powerful tooling
             </h3>
             <p class="font-overpass font-light text-base leading-[1.75] tracking-[0.5px] text-gray-brand">
@@ -528,87 +608,84 @@
 
   </main>
 
-  <!-- =============================================
-       푸터: 다크 배경 + 3열 링크 그룹
-  ============================================= -->
-  <!-- 푸터 영역: 모바일 상하 패딩을 72px(sp-900)로 설정하여 균형 잡힌 여백 확보 -->
-  <footer class="bg-gray-950 text-white rounded-tr-[100px] px-[13.5px] py-sp-900 text-center
-                 md:text-left md:px-sp-600 lg:px-sp-1000">
-    <!-- 푸터 콘텐츠: 모바일에서는 로고와 링크 그룹 사이 간격을 72px(sp-900)로 넉넉하게 설정 -->
-    <div class="max-w-container mx-auto flex flex-col items-center gap-sp-900
-                md:flex-row md:items-start md:justify-between">
-
+  <!-- ╔════════════════════════════════════════════════════════════╗
+       ║  SECTION 7 : FOOTER                                      ║
+       ║  역할: 로고 + 3열 사이트 링크 그룹                        ║
+       ║                                                          ║
+       ║  【Why rounded-tr-[100px]?】                             ║
+       ║  히어로의 rounded-bl-100px와 대칭으로, 푸터는 오른쪽 위  ║
+       ║  모서리를 둥글게 처리합니다. 이 대칭 모서리 처리가        ║
+       ║  일관된 Blogr 브랜드 언어를 형성합니다.                  ║
+       ║                                                          ║
+       ║  【콘텐츠 배치 전략】                                    ║
+       ║  모바일: 세로(flex-col), 중앙 정렬(items-center)         ║
+       ║  태블릿+: 가로(flex-row), 좌측 정렬(justify-start)       ║
+       ║  데스크톱: max-w-container 해제(mx-0), pl-[163px] 적용   ║
+       ║                                                          ║
+       ║  【A11y】 각 링크 그룹에 <nav> 시맨틱 태그 + aria-label: ║
+       ║  "Product 링크", "Company 링크"처럼 스크린 리더가         ║
+       ║  각 내비게이션 영역을 명확히 구분하여 읽습니다.          ║
+       ╚════════════════════════════════════════════════════════════╝ -->
+  <footer class="rounded-tr-[100px] text-center text-white bg-gray-950
+                 px-[13.5px] py-sp-900
+                 md:text-left md:px-[40.19px]
+                 lg:px-0 lg:pl-[163px] lg:pr-sp-1000">
+    <div class="flex flex-col items-center gap-sp-900 mx-auto max-w-container
+                md:flex-row md:items-start md:justify-start md:gap-[126px]
+                lg:mx-0 lg:gap-[184px]">
       <!-- 로고 -->
       <a href="/" aria-label="Blogr 홈으로 이동" class="flex-shrink-0">
         <img src="images/logo.svg" alt="Blogr" width="101" height="32" />
       </a>
-
-      <!-- 링크 그룹들: 모바일=세로, 데스크톱=가로 -->
-      <div class="flex flex-col gap-sp-500 w-full md:flex-row md:gap-sp-800 md:flex-1 md:justify-end">
-
-        <nav aria-label="Product 링크">
-          <!-- 제목 하단 마진을 32px(sp-400)로 설정하여 가독성 확보 -->
-          <h3 class="font-ubuntu font-bold text-base text-white mb-sp-400">Product</h3>
+      <!-- 링크 그룹들 -->
+      <div class="flex flex-col gap-sp-500 w-full
+                  md:flex-1 md:flex-row md:justify-start md:gap-sp-800
+                  lg:gap-[32px]">
+        <!-- Product -->
+        <nav aria-label="Product 링크" class="lg:w-[255px]">
+          <h3 class="mb-sp-400 font-ubuntu font-bold text-base text-white">Product</h3>
           <ul class="flex flex-col gap-sp-100">
-            <li><a href="#"
-                class="font-ubuntu font-normal text-base leading-[2] text-white/75 hover:text-white hover:underline transition-all duration-300">Overview</a>
-            </li>
-            <li><a href="#"
-                class="font-ubuntu font-normal text-base leading-[2] text-white/75 hover:text-white hover:underline transition-all duration-300">Pricing</a>
-            </li>
-            <li><a href="#"
-                class="font-ubuntu font-normal text-base leading-[2] text-white/75 hover:text-white hover:underline transition-all duration-300">Marketplace</a>
-            </li>
-            <li><a href="#"
-                class="font-ubuntu font-normal text-base leading-[2] text-white/75 hover:text-white hover:underline transition-all duration-300">Features</a>
-            </li>
-            <li><a href="#"
-                class="font-ubuntu font-normal text-base leading-[2] text-white/75 hover:text-white hover:underline transition-all duration-300">Integrations</a>
-            </li>
+            <li><a href="#" class="font-ubuntu font-normal text-base leading-[2] text-white/75 hover:text-white hover:underline transition-all duration-300">Overview</a></li>
+            <li><a href="#" class="font-ubuntu font-normal text-base leading-[2] text-white/75 hover:text-white hover:underline transition-all duration-300">Pricing</a></li>
+            <li><a href="#" class="font-ubuntu font-normal text-base leading-[2] text-white/75 hover:text-white hover:underline transition-all duration-300">Marketplace</a></li>
+            <li><a href="#" class="font-ubuntu font-normal text-base leading-[2] text-white/75 hover:text-white hover:underline transition-all duration-300">Features</a></li>
+            <li><a href="#" class="font-ubuntu font-normal text-base leading-[2] text-white/75 hover:text-white hover:underline transition-all duration-300">Integrations</a></li>
           </ul>
         </nav>
-
-        <nav aria-label="Company 링크">
-          <!-- 제목 하단 마진을 32px(sp-400)로 설정 -->
-          <h3 class="font-ubuntu font-bold text-base text-white mb-sp-400">Company</h3>
+        <!-- Company -->
+        <nav aria-label="Company 링크" class="lg:w-[255px]">
+          <h3 class="mb-sp-400 font-ubuntu font-bold text-base text-white">Company</h3>
           <ul class="flex flex-col gap-sp-100">
-            <li><a href="#"
-                class="font-ubuntu font-normal text-base leading-[2] text-white/75 hover:text-white hover:underline transition-all duration-300">About</a>
-            </li>
-            <li><a href="#"
-                class="font-ubuntu font-normal text-base leading-[2] text-white/75 hover:text-white hover:underline transition-all duration-300">Team</a>
-            </li>
-            <li><a href="#"
-                class="font-ubuntu font-normal text-base leading-[2] text-white/75 hover:text-white hover:underline transition-all duration-300">Blog</a>
-            </li>
-            <li><a href="#"
-                class="font-ubuntu font-normal text-base leading-[2] text-white/75 hover:text-white hover:underline transition-all duration-300">Careers</a>
-            </li>
+            <li><a href="#" class="font-ubuntu font-normal text-base leading-[2] text-white/75 hover:text-white hover:underline transition-all duration-300">About</a></li>
+            <li><a href="#" class="font-ubuntu font-normal text-base leading-[2] text-white/75 hover:text-white hover:underline transition-all duration-300">Team</a></li>
+            <li><a href="#" class="font-ubuntu font-normal text-base leading-[2] text-white/75 hover:text-white hover:underline transition-all duration-300">Blog</a></li>
+            <li><a href="#" class="font-ubuntu font-normal text-base leading-[2] text-white/75 hover:text-white hover:underline transition-all duration-300">Careers</a></li>
           </ul>
         </nav>
-
-        <nav aria-label="Connect 링크">
-          <!-- 제목 하단 마진을 32px(sp-400)로 설정 -->
-          <h3 class="font-ubuntu font-bold text-base text-white mb-sp-400">Connect</h3>
+        <!-- Connect -->
+        <nav aria-label="Connect 링크" class="lg:w-[255px]">
+          <h3 class="mb-sp-400 font-ubuntu font-bold text-base text-white">Connect</h3>
           <ul class="flex flex-col gap-sp-100">
-            <li><a href="#"
-                class="font-ubuntu font-normal text-base leading-[2] text-white/75 hover:text-white hover:underline transition-all duration-300">Contact</a>
-            </li>
-            <li><a href="#"
-                class="font-ubuntu font-normal text-base leading-[2] text-white/75 hover:text-white hover:underline transition-all duration-300">Newsletter</a>
-            </li>
-            <li><a href="#"
-                class="font-ubuntu font-normal text-base leading-[2] text-white/75 hover:text-white hover:underline transition-all duration-300">LinkedIn</a>
-            </li>
+            <li><a href="#" class="font-ubuntu font-normal text-base leading-[2] text-white/75 hover:text-white hover:underline transition-all duration-300">Contact</a></li>
+            <li><a href="#" class="font-ubuntu font-normal text-base leading-[2] text-white/75 hover:text-white hover:underline transition-all duration-300">Newsletter</a></li>
+            <li><a href="#" class="font-ubuntu font-normal text-base leading-[2] text-white/75 hover:text-white hover:underline transition-all duration-300">LinkedIn</a></li>
           </ul>
         </nav>
       </div>
     </div>
+  </footer>
 
-
-
-    <!-- JavaScript 파일 연결 (defer: HTML 파싱 완료 후 JS 실행 보장) -->
-    <script src="script.js" defer></script>
+  <!--
+    JavaScript 파일 연결 — defer 속성의 중요성
+    【Why defer?】
+    defer가 없으면 브라우저가 <script> 태그를 만난 즉시 HTML 파싱을 중단하고
+    JS를 다운로드·실행합니다. 이때 script.js가 아직 생성되지 않은 DOM 요소를
+    getElementById로 찾으려 하면 null이 반환되어 에러가 납니다.
+    defer를 사용하면 HTML 파싱이 완전히 끝난 뒤 JS가 실행되므로
+    DOM 요소를 안전하게 참조할 수 있습니다.
+    비유: 집을 다 짓고 나서 인테리어(JS)를 하는 것과 같아요.
+  -->
+  <script src="script.js" defer></script>
 
 </body>
 
