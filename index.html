@@ -1,106 +1,593 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- displays site properly based on user's device -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blogr — A Modern Publishing Platform</title>
+  <meta name="description"
+    content="Blogr is a modern publishing platform. Grow your audience and build your online brand with our free, open, and simple blogging tool." />
 
+  <!-- 구글 폰트: Overpass (제목/본문), Ubuntu (UI 요소) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Overpass:wght@300;600&family=Ubuntu:wght@400;700&display=swap"
+    rel="stylesheet" />
 
+  <!-- Tailwind CSS Play CDN: 빌드 없이 브라우저에서 바로 Tailwind 사용 -->
+  <script src="https://cdn.tailwindcss.com"></script>
 
-  <title>[Blogr]</title>
+  <!-- Tailwind 커스텀 설정: style-guide.md의 디자인 토큰을 Tailwind theme에 등록 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          /* 브랜드 색상: style-guide.md의 HEX 값을 그대로 등록 */
+          colors: {
+            'brand-red': '#FF505C', /* Red 500: 주요 강조색 */
+            'brand-red-lt': '#FF7B86', /* Red 400: 호버 상태 */
+            'brand-red-pale': '#F9F6F6', /* Red 50: 아주 연한 배경 */
+            'brand-blue': '#1F3E5A', /* Blue 900 */
+            'gray-950': '#24242C', /* 푸터 배경 */
+            'gray-brand': '#4C5862', /* 본문 텍스트 */
+            'gray-mid': '#878D92', /* 보조 텍스트 */
+            'gray-soft': '#E7E7E7', /* 구분선, 연한 배경 */
+            'purple-950': '#2D2E40', /* 어두운 보라 (그라디언트 시작) */
+            'purple-900': '#3E4062', /* 보라 (그라디언트 끝) */
+            'purple-800': '#52526F', /* 중간 보라 */
+          },
+          /* 폰트 패밀리 등록 */
+          fontFamily: {
+            'overpass': ['Overpass', 'sans-serif'], /* 제목, 본문 */
+            'ubuntu': ['Ubuntu', 'sans-serif'],   /* 내비게이션, 버튼 */
+          },
+          /* 스페이싱: style-guide.md의 8px 단위 토큰을 Tailwind 단위로 매핑 */
+          /* Tailwind 기본 단위: 1 = 4px. 예) sp-200(16px) = 4 → 이미 Tailwind 기본값 */
+          spacing: {
+            'sp-100': '8px',
+            'sp-200': '16px',
+            'sp-300': '24px',
+            'sp-400': '32px',
+            'sp-500': '40px',
+            'sp-600': '48px',
+            'sp-700': '56px',
+            'sp-800': '64px',
+            'sp-900': '72px',
+            'sp-1000': '80px',
+          },
+          /* 커스텀 border-radius: 섹션 모서리 장식 */
+          borderRadius: {
+            '100px': '100px',
+          },
+          /* 커스텀 박스 섀도우 */
+          boxShadow: {
+            'dropdown': '0 20px 40px rgba(0, 0, 0, 0.2)',
+          },
+          /* 반응형 최대 너비 */
+          maxWidth: {
+            'container': '1110px',
+          },
+        },
+      },
+    };
+  </script>
 
-
+  <!--
+    최소한의 인라인 스타일:
+    SVG 배경 패턴은 Tailwind CDN의 임의값(Arbitrary Values)으로
+    처리하기 어렵기 때문에 여기서만 예외적으로 style 태그를 사용합니다.
+    비유: 집 설계도(Tailwind)로 대부분 짓지만, 특수 벽화(SVG 패턴)만
+    직접 손으로 그리는 것과 같아요.
+  -->
   <style>
-    .attribution {
-      font-size: 11px;
-      text-align: center;
+    /* 히어로 섹션 배경: 모바일용 SVG 패턴 + 오렌지→레드 그라디언트 */
+    .hero-bg {
+      background-image: url('images/bg-pattern-intro-mobile.svg'), linear-gradient(135deg, #FF8F71 0%, #FF3E55 100%);
+      background-repeat: no-repeat;
+      background-position: 35% 33%;
+      /* 디자인 시안의 위치 값 적용 */
+      background-size: 355%, cover;
+      /* 정확한 패턴 크기 355% 적용 */
     }
 
-    .attribution a {
-      color: hsl(228, 45%, 44%);
+    /* 태블릿 이상: 데스크톱용 SVG 패턴으로 교체 */
+    @media (min-width: 768px) {
+      .hero-bg {
+        background-image: url('images/bg-pattern-intro-desktop.svg'), linear-gradient(135deg, #FF8F71 0%, #FF3E55 100%);
+        background-size: 150%, cover;
+        background-position: -20% center, center;
+      }
+    }
+
+    /* 인프라 섹션 배경: 원형 장식 SVG + 어두운 보라 그라디언트 */
+    .infra-bg {
+      background-image: url('images/bg-pattern-circles.svg'), linear-gradient(135deg, #2D2E40 0%, #3F4164 100%);
+      background-repeat: no-repeat;
+      background-position: center -250px, center;
+      background-size: 900px, cover;
+    }
+
+    /* 데스크톱: 원 패턴 왼쪽으로 이동 */
+    @media (min-width: 1024px) {
+      .infra-bg {
+        background-position: -350px -250px, center;
+        background-size: 800px, cover;
+      }
+    }
+
+    /* 화살표 아이콘 회전 애니메이션 */
+    .arrow-rotate {
+      transition: transform 0.3s ease-in-out;
+    }
+
+    [aria-expanded="true"] .arrow-rotate {
+      transform: rotate(180deg);
     }
   </style>
 </head>
 
-<body>
-  Product
+<body class="font-overpass text-base font-light leading-7 tracking-[0.6px] text-gray-brand bg-white overflow-x-hidden">
 
-  Overview
-  Pricing
-  Marketplace
-  Features
-  Integrations
+  <!-- =============================================
+       헤더 & 내비게이션
+  ============================================= -->
+  <header class="absolute top-0 left-0 right-0 z-[100]">
+    <!-- 헤더 내비게이션: 모바일 상단 패딩 56px, 하단 0으로 설정 / 데스크톱은 상하 40px로 유지 -->
+    <nav
+      class="flex items-center justify-between px-sp-300 pt-sp-700 pb-0 max-w-container mx-auto lg:px-sp-1000 lg:py-sp-500 lg:gap-sp-600"
+      aria-label="메인 내비게이션">
 
-  Company
+      <!-- 로고: 모바일 화면에서의 크기 81.66x32px, 데스크톱(lg) 화면에서는 101x32px로 유지 -->
+      <a href="/" aria-label="Blogr 홈으로 이동">
+        <img src="images/logo.svg" alt="Blogr" class="w-[81.66px] h-[32px] lg:w-[101px] lg:h-[32px]" />
+      </a>
 
-  About
-  Team
-  Blog
-  Careers
+      <!-- 모바일 햄버거 버튼: 로고와 정렬을 위해 좌우 패딩(px-0)을 제거하고 터치 영역을 위한 상하 패딩(py-2)만 유지 -->
+      <button class="flex items-center px-0 py-2 lg:hidden" id="hamburger-btn" aria-expanded="false"
+        aria-controls="mobile-menu" aria-label="메뉴 열기">
+        <img src="images/icon-hamburger.svg" alt="" aria-hidden="true" width="32" height="18" />
+      </button>
 
-  Connect
+      <!-- 데스크톱 중앙 드롭다운 메뉴: 모바일 숨김, 데스크톱 표시 -->
+      <div class="hidden lg:flex items-center gap-sp-400 flex-1" role="menubar">
 
-  Contact
-  Newsletter
-  LinkedIn
+        <!-- Product 드롭다운 -->
+        <div class="relative" role="none">
+          <button
+            class="flex items-center gap-2 font-ubuntu font-normal text-base text-white/85 hover:text-white hover:underline transition-all duration-300 py-1"
+            aria-expanded="false" aria-haspopup="true" aria-controls="dd-product" role="menuitem">
+            Product
+            <img src="images/icon-arrow-light.svg" alt="" aria-hidden="true" class="arrow-rotate w-[10px]" />
+          </button>
+          <!-- 드롭다운 메뉴: JS가 hidden 클래스를 뗐다붙였다(toggle) -->
+          <ul
+            class="hidden absolute top-[calc(100%+12px)] left-0 min-w-[180px] bg-white rounded-lg shadow-dropdown p-sp-300 z-[400]"
+            id="dd-product" role="menu" aria-label="Product 하위 메뉴">
+            <li><a href="#" role="menuitem"
+                class="block font-ubuntu font-normal text-[15px] text-gray-brand hover:font-bold hover:text-gray-950 px-2 py-[6px] whitespace-nowrap transition-all duration-300">Overview</a>
+            </li>
+            <li><a href="#" role="menuitem"
+                class="block font-ubuntu font-normal text-[15px] text-gray-brand hover:font-bold hover:text-gray-950 px-2 py-[6px] whitespace-nowrap transition-all duration-300">Pricing</a>
+            </li>
+            <li><a href="#" role="menuitem"
+                class="block font-ubuntu font-normal text-[15px] text-gray-brand hover:font-bold hover:text-gray-950 px-2 py-[6px] whitespace-nowrap transition-all duration-300">Marketplace</a>
+            </li>
+            <li><a href="#" role="menuitem"
+                class="block font-ubuntu font-normal text-[15px] text-gray-brand hover:font-bold hover:text-gray-950 px-2 py-[6px] whitespace-nowrap transition-all duration-300">Features</a>
+            </li>
+            <li><a href="#" role="menuitem"
+                class="block font-ubuntu font-normal text-[15px] text-gray-brand hover:font-bold hover:text-gray-950 px-2 py-[6px] whitespace-nowrap transition-all duration-300">Integrations</a>
+            </li>
+          </ul>
+        </div>
 
-  Login
-  Sign Up
+        <!-- Company 드롭다운 -->
+        <div class="relative" role="none">
+          <button
+            class="flex items-center gap-2 font-ubuntu font-normal text-base text-white/85 hover:text-white hover:underline transition-all duration-300 py-1"
+            aria-expanded="false" aria-haspopup="true" aria-controls="dd-company" role="menuitem">
+            Company
+            <img src="images/icon-arrow-light.svg" alt="" aria-hidden="true" class="arrow-rotate w-[10px]" />
+          </button>
+          <ul
+            class="hidden absolute top-[calc(100%+12px)] left-0 min-w-[180px] bg-white rounded-lg shadow-dropdown p-sp-300 z-[400]"
+            id="dd-company" role="menu" aria-label="Company 하위 메뉴">
+            <li><a href="#" role="menuitem"
+                class="block font-ubuntu font-normal text-[15px] text-gray-brand hover:font-bold hover:text-gray-950 px-2 py-[6px] whitespace-nowrap transition-all duration-300">About</a>
+            </li>
+            <li><a href="#" role="menuitem"
+                class="block font-ubuntu font-normal text-[15px] text-gray-brand hover:font-bold hover:text-gray-950 px-2 py-[6px] whitespace-nowrap transition-all duration-300">Team</a>
+            </li>
+            <li><a href="#" role="menuitem"
+                class="block font-ubuntu font-normal text-[15px] text-gray-brand hover:font-bold hover:text-gray-950 px-2 py-[6px] whitespace-nowrap transition-all duration-300">Blog</a>
+            </li>
+            <li><a href="#" role="menuitem"
+                class="block font-ubuntu font-normal text-[15px] text-gray-brand hover:font-bold hover:text-gray-950 px-2 py-[6px] whitespace-nowrap transition-all duration-300">Careers</a>
+            </li>
+          </ul>
+        </div>
 
-  A modern publishing platform
-  Grow your audience and build your online brand
+        <!-- Connect 드롭다운 -->
+        <div class="relative" role="none">
+          <button
+            class="flex items-center gap-2 font-ubuntu font-normal text-base text-white/85 hover:text-white hover:underline transition-all duration-300 py-1"
+            aria-expanded="false" aria-haspopup="true" aria-controls="dd-connect" role="menuitem">
+            Connect
+            <img src="images/icon-arrow-light.svg" alt="" aria-hidden="true" class="arrow-rotate w-[10px]" />
+          </button>
+          <ul
+            class="hidden absolute top-[calc(100%+12px)] left-0 min-w-[180px] bg-white rounded-lg shadow-dropdown p-sp-300 z-[400]"
+            id="dd-connect" role="menu" aria-label="Connect 하위 메뉴">
+            <li><a href="#" role="menuitem"
+                class="block font-ubuntu font-normal text-[15px] text-gray-brand hover:font-bold hover:text-gray-950 px-2 py-[6px] whitespace-nowrap transition-all duration-300">Contact</a>
+            </li>
+            <li><a href="#" role="menuitem"
+                class="block font-ubuntu font-normal text-[15px] text-gray-brand hover:font-bold hover:text-gray-950 px-2 py-[6px] whitespace-nowrap transition-all duration-300">Newsletter</a>
+            </li>
+            <li><a href="#" role="menuitem"
+                class="block font-ubuntu font-normal text-[15px] text-gray-brand hover:font-bold hover:text-gray-950 px-2 py-[6px] whitespace-nowrap transition-all duration-300">LinkedIn</a>
+            </li>
+          </ul>
+        </div>
+      </div>
 
-  Start for Free
-  Learn More
+      <!-- 데스크톱 우측: 로그인 / 가입 버튼 -->
+      <div class="hidden lg:flex items-center gap-sp-300">
+        <a href="#"
+          class="font-ubuntu font-bold text-base text-white/85 hover:text-white transition-all duration-300">Login</a>
+        <!-- Sign Up 버튼: 흰 배경 + 빨간 글씨, 호버시 반전 -->
+        <a href="#"
+          class="font-ubuntu font-bold text-base text-brand-red bg-white rounded-full px-9 py-3 hover:bg-brand-red-lt hover:text-white transition-all duration-300">Sign
+          Up</a>
+      </div>
+    </nav>
+  </header>
 
-  Designed for the future
+  <!-- =============================================
+       오버레이: 모바일 메뉴 뒤 어두운 막
+       JS가 hidden 클래스를 뗐다붙였다(toggle) 함
+  ============================================= -->
+  <div id="overlay" class="hidden fixed inset-0 bg-gradient-to-b from-black/50 to-gray-950/80 z-[200]"
+    aria-hidden="true"></div>
 
-  Introducing an extensible editor
-  Blogr features an exceedingly intuitive interface which lets you focus on one thing: creating content.
-  The editor supports management of multiple blogs and allows easy manipulation of embeds such as images,
-  videos, and Markdown. Extensibility with plugins and themes provide easy ways to add functionality or
-  change the looks of a blog.
+  <!-- =============================================
+       모바일 메뉴 카드
+  ============================================= -->
+  <div id="mobile-menu"
+    class="hidden fixed top-[110px] left-sp-300 right-sp-300 bg-white rounded-lg p-sp-400 z-[300] shadow-dropdown"
+    role="dialog" aria-modal="true" aria-label="모바일 내비게이션 메뉴">
 
-  Robust content management
-  Flexible content management enables users to easily move through posts. Increase the usability of your blog
-  by adding customized categories, sections, format, or flow. With this functionality, you’re in full control.
+    <!-- 모바일 메뉴 상단: 로고 + 닫기 버튼 -->
+    <div class="flex items-center justify-between mb-sp-400">
+      <img src="images/logo.svg" alt="Blogr" width="101" height="32" />
+      <button id="close-btn" class="p-2" aria-label="메뉴 닫기">
+        <img src="images/icon-close.svg" alt="" aria-hidden="true" width="26" height="26" />
+      </button>
+    </div>
 
-  State of the Art Infrastructure
-  With reliability and speed in mind, worldwide data centers provide the backbone for ultra-fast connectivity.
-  This ensures your site will load instantly, no matter where your readers are, keeping your site competitive.
+    <nav aria-label="모바일 내비게이션">
+      <!-- Product 아코디언 -->
+      <div class="border-b border-gray-soft">
+        <button
+          class="flex items-center justify-center gap-2 w-full py-sp-200 font-overpass font-semibold text-lg text-gray-950 transition-all duration-300"
+          aria-expanded="false" aria-controls="mob-product">
+          Product
+          <img src="images/icon-arrow-dark.svg" alt="" aria-hidden="true" class="arrow-rotate w-[10px]" />
+        </button>
+        <!-- 서브메뉴: 기본 hidden, 클릭 시 표시 -->
+        <ul id="mob-product" class="hidden bg-gray-soft rounded mb-sp-200 py-sp-200 text-center">
+          <li><a href="#"
+              class="block font-overpass font-light text-base text-gray-brand hover:font-semibold hover:text-gray-950 px-sp-200 py-sp-100 transition-all duration-300">Overview</a>
+          </li>
+          <li><a href="#"
+              class="block font-overpass font-light text-base text-gray-brand hover:font-semibold hover:text-gray-950 px-sp-200 py-sp-100 transition-all duration-300">Pricing</a>
+          </li>
+          <li><a href="#"
+              class="block font-overpass font-light text-base text-gray-brand hover:font-semibold hover:text-gray-950 px-sp-200 py-sp-100 transition-all duration-300">Marketplace</a>
+          </li>
+          <li><a href="#"
+              class="block font-overpass font-light text-base text-gray-brand hover:font-semibold hover:text-gray-950 px-sp-200 py-sp-100 transition-all duration-300">Features</a>
+          </li>
+          <li><a href="#"
+              class="block font-overpass font-light text-base text-gray-brand hover:font-semibold hover:text-gray-950 px-sp-200 py-sp-100 transition-all duration-300">Integrations</a>
+          </li>
+        </ul>
+      </div>
 
-  Free, open, simple
-  Blogr is a free and open source application backed by a large community of helpful developers. It supports
-  features such as code syntax highlighting, RSS feeds, social media integration, third-party commenting tools,
-  and works seamlessly with Google Analytics. The architecture is clean and is relatively easy to learn.
+      <!-- Company 아코디언 -->
+      <div class="border-b border-gray-soft">
+        <button
+          class="flex items-center justify-center gap-2 w-full py-sp-200 font-overpass font-semibold text-lg text-gray-950 transition-all duration-300"
+          aria-expanded="false" aria-controls="mob-company">
+          Company
+          <img src="images/icon-arrow-dark.svg" alt="" aria-hidden="true" class="arrow-rotate w-[10px]" />
+        </button>
+        <ul id="mob-company" class="hidden bg-gray-soft rounded mb-sp-200 py-sp-200 text-center">
+          <li><a href="#"
+              class="block font-overpass font-light text-base text-gray-brand hover:font-semibold hover:text-gray-950 px-sp-200 py-sp-100 transition-all duration-300">About</a>
+          </li>
+          <li><a href="#"
+              class="block font-overpass font-light text-base text-gray-brand hover:font-semibold hover:text-gray-950 px-sp-200 py-sp-100 transition-all duration-300">Team</a>
+          </li>
+          <li><a href="#"
+              class="block font-overpass font-light text-base text-gray-brand hover:font-semibold hover:text-gray-950 px-sp-200 py-sp-100 transition-all duration-300">Blog</a>
+          </li>
+          <li><a href="#"
+              class="block font-overpass font-light text-base text-gray-brand hover:font-semibold hover:text-gray-950 px-sp-200 py-sp-100 transition-all duration-300">Careers</a>
+          </li>
+        </ul>
+      </div>
 
-  Powerful tooling
-  Batteries included. We built a simple and straightforward CLI tool that makes customization and deployment a breeze,
-  but
-  capable of producing even the most complicated sites.
+      <!-- Connect 아코디언 -->
+      <div class="border-b border-gray-soft">
+        <button
+          class="flex items-center justify-center gap-2 w-full py-sp-200 font-overpass font-semibold text-lg text-gray-950 transition-all duration-300"
+          aria-expanded="false" aria-controls="mob-connect">
+          Connect
+          <img src="images/icon-arrow-dark.svg" alt="" aria-hidden="true" class="arrow-rotate w-[10px]" />
+        </button>
+        <ul id="mob-connect" class="hidden bg-gray-soft rounded mb-sp-200 py-sp-200 text-center">
+          <li><a href="#"
+              class="block font-overpass font-light text-base text-gray-brand hover:font-semibold hover:text-gray-950 px-sp-200 py-sp-100 transition-all duration-300">Contact</a>
+          </li>
+          <li><a href="#"
+              class="block font-overpass font-light text-base text-gray-brand hover:font-semibold hover:text-gray-950 px-sp-200 py-sp-100 transition-all duration-300">Newsletter</a>
+          </li>
+          <li><a href="#"
+              class="block font-overpass font-light text-base text-gray-brand hover:font-semibold hover:text-gray-950 px-sp-200 py-sp-100 transition-all duration-300">LinkedIn</a>
+          </li>
+        </ul>
+      </div>
 
-  Product
+      <!-- 구분선 + 로그인/가입 -->
+      <hr class="border-gray-soft my-sp-200" />
+      <div class="flex flex-col items-center gap-sp-200 py-sp-200">
+        <a href="#"
+          class="font-overpass font-semibold text-lg text-gray-950 hover:text-brand-red transition-all duration-300">Login</a>
+        <!-- Sign Up: 그라디언트 배경 버튼 -->
+        <a href="#"
+          class="font-ubuntu font-bold text-base text-white rounded-full px-10 py-[14px] hover:opacity-75 transition-all duration-300"
+          style="background: linear-gradient(135deg, #FF8F71 0%, #FF3E55 100%);">Sign Up</a>
+      </div>
+    </nav>
+  </div>
 
-  Overview
-  Pricing
-  Marketplace
-  Features
-  Integrations
+  <!-- =============================================
+       메인 콘텐츠
+  ============================================= -->
+  <main id="main-content">
 
-  Company
+    <section class="hero-bg relative text-center text-white overflow-hidden rounded-bl-100px
+                    pt-[184px] pb-[154px]
+                    md:pt-[200px] md:pb-[130px]" aria-labelledby="hero-title">
+      <!-- 히어로 콘텐츠 컨테이너: 디자인 시안의 좌우 padding 13.5px 적용 -->
+      <div class="max-w-container mx-auto px-[13.5px]">
+        <!-- 모바일 화면에서의 상하 여백을 각각 184px, 154px로 정밀하게 설정했습니다 -->
+        <!-- 메인 제목: 모바일 40px(디자인 시안), 하단 마진 24px(sp-300)로 조정 -->
+        <h1 id="hero-title"
+          class="font-overpass font-semibold text-[40px] leading-[1.25] tracking-[-1.2px] mb-sp-300 md:text-[64px] md:leading-none md:tracking-[-2px]">
+          A modern publishing platform
+        </h1>
+        <!-- 부제목: 텍스트 프리셋 4(20px, Light, 1.25em) 적용 및 하단 마진 40px(sp-500) 설정 -->
+        <p class="font-overpass font-light text-xl leading-[1.25] opacity-85 mb-sp-500">
+          Grow your audience and build your online brand
+        </p>
+        <!-- CTA 버튼 그룹 -->
+        <div class="flex justify-center flex-wrap gap-sp-200">
+          <!-- 주 버튼: 흰 배경 + 빨간 글씨 -->
+          <a href="#"
+            class="flex items-center justify-center font-ubuntu font-bold text-base text-brand-red bg-white rounded-full w-[137px] h-[48px] border-2 border-white hover:bg-transparent hover:text-white transition-all duration-300 ease-in-out">
+            Start for Free
+          </a>
+          <!-- 보조 버튼: 모바일에서는 테두리 1px(border), 데스크톱(md) 이상은 2px(border-2) 적용 -->
+          <a href="#"
+            class="flex items-center justify-center font-ubuntu font-bold text-base text-white bg-transparent rounded-full w-[137px] h-[48px] border border-white md:border-2 hover:bg-white hover:text-brand-red transition-all duration-300 ease-in-out">
+            Learn More
+          </a>
+        </div>
+      </div>
+    </section>
 
-  About
-  Team
-  Blog
-  Careers
+    <!-- ── Editor 섹션: Designed for the future ── -->
+    <!-- 모바일 화면에서의 상하 여백을 각각 100px로 정밀하게 조정하여 시원한 공간감을 주었습니다 -->
+    <section class="overflow-hidden pt-[100px] pb-[100px] text-center lg:text-left" aria-labelledby="editor-title">
+      <!-- 메인 제목: 색상을 brand-blue(#1F3E5A)로 변경하고 하단 여백 56px 유지 -->
+      <h2 id="editor-title"
+        class="font-overpass font-semibold text-[clamp(28px,6vw,40px)] leading-[1.25] tracking-[-1.2px] text-brand-blue mb-sp-700 px-sp-300 lg:px-sp-1000 text-center">
+        Designed for the future
+      </h2>
 
-  Connect
+      <!-- 내부: 모바일=이미지->텍스트 순서, 데스크톱=텍스트 왼쪽, 이미지 오른쪽 -->
+      <div class="lg:grid lg:grid-cols-2 lg:items-center lg:max-w-[1200px] lg:mx-auto lg:px-sp-1000 lg:gap-sp-600">
 
-  Contact
-  Newsletter
-  LinkedIn
+        <!-- 에디터 이미지 (모바일에서 먼저 보이도록 소스 순서 조정, 데스크톱에서는 lg:order-2로 오른쪽 배치) -->
+        <div class="mb-sp-700 lg:mb-0 lg:order-2 lg:relative lg:right-[-80px]" aria-hidden="true">
+          <!-- 모바일용 이미지: 326x326 비율에 맞게 최적화 -->
+          <img src="images/illustration-editor-mobile.svg" alt="에디터 인터페이스 일러스트"
+            class="w-full max-w-[326px] mx-auto lg:hidden" />
+          <!-- 데스크톱용 이미지 -->
+          <img src="images/illustration-editor-desktop.svg" alt="에디터 인터페이스 일러스트"
+            class="hidden lg:block w-full max-w-[700px]" />
+        </div>
 
+        <!-- 텍스트 블록 (모바일에서는 이미지 다음, 데스크톱에서는 lg:order-1로 왼쪽 배치) -->
+        <!-- 기사 간의 간격을 피그마 수치인 56px(gap-sp-700)로 설정 -->
+        <div class="flex flex-col gap-sp-700 px-sp-300 lg:px-0 lg:order-1">
+          <article>
+            <!-- 소제목: 색상을 brand-blue(#1F3E5A)로 변경 -->
+            <h3 class="font-overpass font-semibold text-[28px] leading-none text-brand-blue mb-sp-200">
+              Introducing an extensible editor
+            </h3>
+            <p class="font-overpass font-light text-base leading-[1.75] tracking-[0.5px] text-gray-brand">
+              Blogr features an exceedingly intuitive interface which lets you focus on one thing:
+              creating content. The editor supports management of multiple blogs and allows easy
+              manipulation of embeds such as images, videos, and Markdown. Extensibility with
+              plugins and themes provide easy ways to add functionality or change the looks of a blog.
+            </p>
+          </article>
+          <article>
+            <h3 class="font-overpass font-semibold text-[28px] leading-none text-brand-blue mb-sp-200">
+              Robust content management
+            </h3>
+            <p class="font-overpass font-light text-base leading-[1.75] tracking-[0.5px] text-gray-brand">
+              Flexible content management enables users to easily move through posts. Increase the
+              usability of your blog by adding customized categories, sections, format, or flow.
+              With this functionality, you're in full control.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- 인프라 섹션: 모바일 상단 마진 173px, 폰 일러스트의 상단 돌출을 위해 mt-[-251px] 적용 -->
+    <section class="infra-bg mt-[173px] lg:mt-0 rounded-tr-[100px] rounded-bl-[100px] text-center text-white
+                    px-[13.5px] py-sp-1000
+                    lg:flex lg:items-center lg:text-left lg:min-h-[400px] lg:px-sp-1000" aria-labelledby="infra-title">
+
+      <!-- 폰 일러스트: 모바일에서 상단으로 크게 겹쳐 보이도록 mt-[-251px] 적용 -->
+      <div class="mt-[-251px] mb-sp-500 lg:mt-0 lg:mb-0 lg:mr-sp-800 lg:flex-shrink-0 lg:translate-y-[-30px]"
+        aria-hidden="true">
+        <img src="images/illustration-phones.svg" alt="스마트폰 앱 스크린샷 일러스트"
+          class="w-[380px] max-w-full mx-auto lg:w-[430px]" />
+      </div>
+
+      <!-- 텍스트 영역: 피그마 프리셋에 맞춰 폰트(Preset 2, Preset 5)와 간격 등 조정 -->
+      <div class="flex flex-col gap-sp-300 lg:flex-1 lg:py-sp-900 px-sp-300">
+        <!-- 메인 제목: Preset 2 (40px, SemiBold, 1.25em, -1.2px) 적용 -->
+        <h2 id="infra-title"
+          class="font-overpass font-semibold text-[40px] leading-[1.25] tracking-[-1.2px]">
+          State of the Art Infrastructure
+        </h2>
+        <!-- 본문 텍스트: Preset 5 (16px, Light, 1.75em, 0.5px) 적용 -->
+        <p class="font-overpass font-light text-base leading-[1.75] tracking-[0.5px] text-white opacity-80">
+          With reliability and speed in mind, worldwide data centers provide the backbone for
+          ultra-fast connectivity. This ensures your site will load instantly, no matter where
+          your readers are, keeping your site competitive.
+        </p>
+      </div>
+    </section>
+
+    <!-- ── Laptop 섹션: Free, open, simple ── -->
+    <section class="overflow-hidden py-sp-900 text-center lg:text-left" aria-labelledby="laptop-title">
+      <!-- 내부: 모바일=단일컬럼, 데스크톱=2컬럼(이미지 왼쪽, 텍스트 오른쪽) -->
+      <div class="lg:flex lg:items-center lg:max-w-[1200px] lg:mx-auto lg:px-sp-1000 lg:gap-sp-600">
+
+        <!-- 랩톱 이미지 (데스크톱: 왼쪽으로 살짝 overflow) -->
+        <div class="mb-sp-600 lg:mb-0 lg:flex-shrink-0 lg:relative lg:left-[-80px]" aria-hidden="true">
+          <img src="images/illustration-laptop-mobile.svg" alt="노트북 사용 일러스트"
+            class="w-full max-w-[500px] mx-auto lg:hidden" />
+          <img src="images/illustration-laptop-desktop.svg" alt="노트북 사용 일러스트" class="hidden lg:block w-[600px]"
+            style="max-width: none;" />
+        </div>
+
+        <!-- 텍스트 블록 -->
+        <div id="laptop-title" class="flex flex-col gap-sp-500 px-[13.5px] lg:px-0 lg:flex-1">
+          <article>
+            <h3 class="font-overpass font-semibold text-[28px] leading-none text-gray-950 mb-sp-200">
+              Free, open, simple
+            </h3>
+            <p class="font-overpass font-light text-base leading-[1.75] tracking-[0.6px] text-gray-mid">
+              Blogr is a free and open source application backed by a large community of helpful
+              developers. It supports features such as code syntax highlighting, RSS feeds, social
+              media integration, third-party commenting tools, and works seamlessly with Google
+              Analytics. The architecture is clean and is relatively easy to learn.
+            </p>
+          </article>
+          <article>
+            <h3 class="font-overpass font-semibold text-[28px] leading-none text-gray-950 mb-sp-200">
+              Powerful tooling
+            </h3>
+            <p class="font-overpass font-light text-base leading-[1.75] tracking-[0.6px] text-gray-mid">
+              Batteries included. We built a simple and straightforward CLI tool that makes
+              customization and deployment a breeze, but capable of producing even the most
+              complicated sites.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- =============================================
+       푸터: 다크 배경 + 3열 링크 그룹
+  ============================================= -->
+  <footer class="bg-gray-950 text-white rounded-tr-[100px] px-[13.5px] py-sp-800 text-center
+                 md:text-left md:px-sp-600 lg:px-sp-1000">
+    <div class="max-w-container mx-auto flex flex-col items-center gap-sp-600
+                md:flex-row md:items-start md:justify-between">
+
+      <!-- 로고 -->
+      <a href="/" aria-label="Blogr 홈으로 이동" class="flex-shrink-0">
+        <img src="images/logo.svg" alt="Blogr" width="101" height="32" />
+      </a>
+
+      <!-- 링크 그룹들: 모바일=세로, 데스크톱=가로 -->
+      <div class="flex flex-col gap-sp-500 w-full md:flex-row md:gap-sp-800 md:flex-1 md:justify-end">
+
+        <!-- Product 링크 그룹 -->
+        <nav aria-label="Product 링크">
+          <h3 class="font-ubuntu font-bold text-base text-white mb-sp-300">Product</h3>
+          <ul class="flex flex-col gap-sp-100">
+            <li><a href="#"
+                class="font-ubuntu font-normal text-base leading-[2] text-white/75 hover:text-white hover:underline transition-all duration-300">Overview</a>
+            </li>
+            <li><a href="#"
+                class="font-ubuntu font-normal text-base leading-[2] text-white/75 hover:text-white hover:underline transition-all duration-300">Pricing</a>
+            </li>
+            <li><a href="#"
+                class="font-ubuntu font-normal text-base leading-[2] text-white/75 hover:text-white hover:underline transition-all duration-300">Marketplace</a>
+            </li>
+            <li><a href="#"
+                class="font-ubuntu font-normal text-base leading-[2] text-white/75 hover:text-white hover:underline transition-all duration-300">Features</a>
+            </li>
+            <li><a href="#"
+                class="font-ubuntu font-normal text-base leading-[2] text-white/75 hover:text-white hover:underline transition-all duration-300">Integrations</a>
+            </li>
+          </ul>
+        </nav>
+
+        <!-- Company 링크 그룹 -->
+        <nav aria-label="Company 링크">
+          <h3 class="font-ubuntu font-bold text-base text-white mb-sp-300">Company</h3>
+          <ul class="flex flex-col gap-sp-100">
+            <li><a href="#"
+                class="font-ubuntu font-normal text-base leading-[2] text-white/75 hover:text-white hover:underline transition-all duration-300">About</a>
+            </li>
+            <li><a href="#"
+                class="font-ubuntu font-normal text-base leading-[2] text-white/75 hover:text-white hover:underline transition-all duration-300">Team</a>
+            </li>
+            <li><a href="#"
+                class="font-ubuntu font-normal text-base leading-[2] text-white/75 hover:text-white hover:underline transition-all duration-300">Blog</a>
+            </li>
+            <li><a href="#"
+                class="font-ubuntu font-normal text-base leading-[2] text-white/75 hover:text-white hover:underline transition-all duration-300">Careers</a>
+            </li>
+          </ul>
+        </nav>
+
+        <!-- Connect 링크 그룹 -->
+        <nav aria-label="Connect 링크">
+          <h3 class="font-ubuntu font-bold text-base text-white mb-sp-300">Connect</h3>
+          <ul class="flex flex-col gap-sp-100">
+            <li><a href="#"
+                class="font-ubuntu font-normal text-base leading-[2] text-white/75 hover:text-white hover:underline transition-all duration-300">Contact</a>
+            </li>
+            <li><a href="#"
+                class="font-ubuntu font-normal text-base leading-[2] text-white/75 hover:text-white hover:underline transition-all duration-300">Newsletter</a>
+            </li>
+            <li><a href="#"
+                class="font-ubuntu font-normal text-base leading-[2] text-white/75 hover:text-white hover:underline transition-all duration-300">LinkedIn</a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+
+
+
+    <!-- JavaScript 파일 연결 (defer: HTML 파싱 완료 후 JS 실행 보장) -->
+    <script src="script.js" defer></script>
 
 </body>
 
