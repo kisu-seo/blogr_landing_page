@@ -90,23 +90,29 @@
       /* 정확한 패턴 크기 355% 적용 */
     }
 
-    /* 태블릿 이상: 데스크톱용 SVG 패턴으로 교체 */
+    /* 태블릿 이상: 배경 패턴의 사이즈와 위치를 정밀하게 조절 (디자인 시안 기준) */
     @media (min-width: 768px) {
       .hero-bg {
         background-image: url('images/bg-pattern-intro-desktop.svg'), linear-gradient(135deg, #FF8F71 0%, #FF3E55 100%);
-        background-size: 150%, cover;
-        background-position: -20% center, center;
+        background-size: 385%, cover;           /* 패턴 크기를 385%로 늘려 태블릿 화면에 최적화 */
+        background-position: 31% 52%, center;  /* 패턴 위치를 31% 52%로 이동하여 콘텐츠와 정렬 */
       }
     }
 
-    /* 인프라 섹션 배경: 원형 장식 SVG + 어두운 보라 그라디언트 */
+    /* 인프라 섹션 배경 (모바일 기본 설정) */
     .infra-bg {
       background-image: url('images/bg-pattern-circles.svg'), linear-gradient(135deg, #2D2E40 0%, #3F4164 100%);
       background-repeat: no-repeat;
-      background-position: center -255px, center;
-      /* 디자인 시안에 최적화된 원형 패턴 위치 */
-      background-size: 570px, cover;
-      /* 디자인 시안의 원형 패턴 크기 570px 적용 */
+      background-position: center -240px, center;
+      background-size: 600px, cover;
+    }
+
+    /* 태블릿: 배경 원형 패턴의 위치와 크기를 최종적으로 정밀 조정 (디자인 시안 업데이트 반영) */
+    @media (min-width: 768px) {
+      .infra-bg {
+        background-position: center -320px, center; /* 패턴의 중심을 -320px로 이동하여 일러스트와 완벽한 조화 */
+        background-size: 603px, cover;             /* 패턴 크기를 603px로 미세 조정 */
+      }
     }
 
     /* 데스크톱: 원 패턴 왼쪽으로 이동 */
@@ -141,9 +147,9 @@
        헤더 & 내비게이션
   ============================================= -->
   <header class="absolute top-0 left-0 right-0 z-[100]">
-    <!-- 헤더 내비게이션: 모바일 상단 패딩 56px, 하단 0으로 설정 / 데스크톱은 상하 40px로 유지 -->
+    <!-- 헤더 내비게이션: 모바일(상단 56px, 좌우 24px), 태블릿(좌우 40px), 데스크톱(상하 40px, 좌우 80px) 패딩 적용 -->
     <nav
-      class="flex items-center justify-between px-sp-300 pt-sp-700 pb-0 max-w-container mx-auto lg:px-sp-1000 lg:py-sp-500 lg:gap-sp-600"
+      class="flex items-center justify-between pt-sp-700 px-sp-300 md:px-sp-500 lg:px-sp-1000 lg:py-sp-500 max-w-container mx-auto lg:gap-sp-600"
       aria-label="메인 내비게이션">
 
       <!-- 로고: 모바일 화면에서의 크기 81.66x32px, 데스크톱(lg) 화면에서는 101x32px로 유지 -->
@@ -363,16 +369,17 @@
     <section class="hero-bg relative text-center text-white overflow-hidden rounded-bl-100px
                     pt-[184px] pb-[154px]
                     md:pt-[200px] md:pb-[130px]" aria-labelledby="hero-title">
-      <!-- 히어로 콘텐츠 컨테이너: 디자인 시안의 좌우 padding 13.5px 적용 -->
-      <div class="max-w-container mx-auto px-[13.5px]">
+
+      <!-- 히어로 콘텐츠 내부: 모바일(318px), 태블릿(md:581px), 데스크톱(lg:900px) 최대 너비 정밀 제어 -->
+      <div class="max-w-[318px] md:max-w-[581px] mx-auto lg:max-w-[900px]">
         <!-- 모바일 화면에서의 상하 여백을 각각 184px, 154px로 정밀하게 설정했습니다 -->
-        <!-- 메인 제목: 모바일 40px(디자인 시안), 하단 마진 24px(sp-300)로 조정 -->
+        <!-- 메인 제목: 프리셋 1(64px, SemiBold) 적용 및 태블릿 하단 마진 32px(md:mb-sp-400) 설정 -->
         <h1 id="hero-title"
-          class="font-overpass font-semibold text-[40px] leading-[1.25] tracking-[-1.2px] mb-sp-300 md:text-[64px] md:leading-none md:tracking-[-2px]">
-          A modern publishing platform
+          class="font-overpass font-semibold text-[40px] leading-[1.25] tracking-[-1.2px] mb-sp-300 md:text-[64px] md:leading-none md:tracking-[-2px] md:mb-sp-400">
+          A modern <br class="hidden md:block" /> publishing platform
         </h1>
-        <!-- 부제목: 텍스트 프리셋 4(20px, Light, 1.25em) 적용 및 하단 마진 40px(sp-500) 설정 -->
-        <p class="font-overpass font-light text-xl leading-[1.25] opacity-85 mb-sp-500">
+        <!-- 부제목: 프리셋 4 적용, 100% 불투명도 및 태블릿 하단 마진 32px(md:mb-sp-400) 설정 -->
+        <p class="font-overpass font-light text-xl leading-[1.25] mb-sp-500 md:mb-sp-400">
           Grow your audience and build your online brand
         </p>
         <!-- CTA 버튼 그룹 -->
@@ -388,24 +395,25 @@
             Learn More
           </a>
         </div>
-      </div>
+      </div> <!-- // 히어로 콘텐츠 내부 div 종료 -->
+      </div> <!-- // 히어로 외부 컨테이너(max-w-container) div 종료 -->
     </section>
 
     <!-- ── Editor 섹션: Designed for the future ── -->
-    <!-- 모바일 화면에서의 상하 여백을 각각 100px로 정밀하게 조정하여 시원한 공간감을 주었습니다 -->
-    <section class="overflow-hidden pt-[100px] pb-[100px] text-center lg:text-left" aria-labelledby="editor-title">
-      <!-- 메인 제목: 색상을 brand-blue(#1F3E5A)로 변경하고 하단 여백 56px 유지 -->
+    <!-- 모바일(100px), 태블릿(md:81.44px), 데스크톱(100px) 하단 여백 정밀 제어 -->
+    <section class="overflow-hidden pt-[100px] pb-[100px] md:pb-[81.44px] text-center lg:text-left" aria-labelledby="editor-title">
+      <!-- 메인 제목: 태블릿(md) 화면에서 하단 마진 0 적용 -->
       <h2 id="editor-title"
-        class="font-overpass font-semibold text-[clamp(28px,6vw,40px)] leading-[1.25] tracking-[-1.2px] text-brand-blue mb-sp-700 px-sp-300 lg:px-sp-1000 text-center">
+        class="font-overpass font-semibold text-[clamp(28px,6vw,40px)] leading-[1.25] tracking-[-1.2px] text-brand-blue mb-sp-700 md:mb-0 px-sp-300 lg:px-sp-1000 text-center">
         Designed for the future
       </h2>
 
       <!-- 내부: 모바일=이미지->텍스트 순서, 데스크톱=텍스트 왼쪽, 이미지 오른쪽 -->
       <div class="lg:grid lg:grid-cols-2 lg:items-center lg:max-w-[1200px] lg:mx-auto lg:px-sp-1000 lg:gap-sp-600">
 
-        <!-- 에디터 이미지: 크기와 정렬 제어권을 부모 div로 위임, img는 부모를 꽉 채우도록 설정 -->
+        <!-- 에디터 이미지: 모바일(56px), 태블릿(md:32px), 데스크톱(lg:0) 하단 마진 정밀 제어 -->
         <div
-          class="w-full max-w-[326px] mx-auto mb-sp-700 lg:max-w-[700px] lg:mb-0 lg:order-2 lg:relative lg:right-[-80px] lg:mx-0"
+          class="w-full max-w-[326px] md:max-w-[688px] mx-auto mb-sp-700 md:mb-sp-400 lg:max-w-[700px] lg:mb-0 lg:order-2 lg:relative lg:right-[-80px] lg:mx-0"
           aria-hidden="true">
           <!-- 모바일용 이미지: 부모 상자를 100% 채움 -->
           <img src="images/illustration-editor-mobile.svg" alt="에디터 인터페이스 일러스트" class="w-full h-auto block lg:hidden" />
@@ -414,12 +422,11 @@
             class="hidden lg:block w-full h-auto" />
         </div>
 
-        <!-- 텍스트 블록 (모바일에서는 이미지 다음, 데스크톱에서는 lg:order-1로 왼쪽 배치) -->
-        <!-- 기사 간의 간격을 피그마 수치인 56px(gap-sp-700)로 설정 -->
-        <div class="flex flex-col gap-sp-700 px-sp-300 lg:px-0 lg:order-1">
+        <!-- 텍스트 블록: 모바일(56px), 태블릿(md:64px) 간격(gap) 정밀 제어 -->
+        <div class="flex flex-col gap-sp-700 md:gap-sp-800 px-sp-300 md:px-0 max-w-[318px] md:max-w-[540px] mx-auto lg:max-w-none lg:px-0 lg:order-1">
           <article>
-            <!-- 소제목: 색상을 brand-blue(#1F3E5A)로 변경 -->
-            <h3 class="font-overpass font-semibold text-[28px] leading-none text-brand-blue mb-sp-200">
+            <!-- 소제목: 태블릿(md) 화면에서 가로 중앙(justify-center) 및 상단(items-start) 정렬 적용 -->
+            <h3 class="font-overpass font-semibold text-[28px] leading-none text-brand-blue mb-sp-200 h-[41px] flex items-start md:justify-center">
               Introducing an extensible editor
             </h3>
             <p class="font-overpass font-light text-base leading-[1.75] tracking-[0.5px] text-gray-brand">
@@ -430,7 +437,8 @@
             </p>
           </article>
           <article>
-            <h3 class="font-overpass font-semibold text-[28px] leading-none text-brand-blue mb-sp-200">
+            <!-- 소제목: 태블릿 가로 중앙 정렬 적용 -->
+            <h3 class="font-overpass font-semibold text-[28px] leading-none text-brand-blue mb-sp-200 h-[41px] flex items-start md:justify-center">
               Robust content management
             </h3>
             <p class="font-overpass font-light text-base leading-[1.75] tracking-[0.5px] text-gray-brand">
@@ -443,27 +451,27 @@
       </div>
     </section>
 
-    <!-- 인프라 섹션: 상단 패딩 80px, 하단 패딩 103.5px로 정밀 조정 -->
-    <section class="infra-bg mt-[173px] lg:mt-0 rounded-tr-[100px] rounded-bl-[100px] text-center text-white
-                    px-sp-300 pt-sp-1000 pb-[103.5px]
+    <!-- 인프라 섹션: 모바일(mt-173px), 태블릿(md:mt-172px), 데스크톱(lg:mt-0) 상단 여백 정밀 제어 -->
+    <section class="infra-bg mt-[173px] md:mt-[172px] lg:mt-0 rounded-tr-[100px] rounded-bl-[100px] text-center text-white
+                    px-sp-300 pt-sp-1000 pb-[103.5px] md:pb-[55.5px]
                     lg:flex lg:items-center lg:text-left lg:min-h-[400px] lg:px-sp-1000" aria-labelledby="infra-title">
 
-      <!-- 폰 일러스트: 크기와 정렬 제어권을 부모 div로 위임, img는 부모를 꽉 채우도록 설정 -->
+      <!-- 폰 일러스트: 모바일(mt-251px), 태블릿(md:mt-266px), 데스크톱(mt-0) 상단 여백 정밀 제어 -->
       <div
-        class="w-full max-w-[380px] mx-auto mt-[-251px] mb-0 lg:max-w-[430px] lg:mt-0 lg:mx-0 lg:mr-sp-800 lg:flex-shrink-0 lg:translate-y-[-30px]"
+        class="w-full max-w-[380px] mx-auto mt-[-251px] md:mt-[-266px] mb-0 lg:max-w-[430px] lg:mt-0 lg:mx-0 lg:mr-sp-800 lg:flex-shrink-0 lg:translate-y-[-30px]"
         aria-hidden="true">
         <!-- 스마트폰 일러스트: 부모 상자를 100% 채움 -->
         <img src="images/illustration-phones.svg" alt="스마트폰 앱 스크린샷 일러스트" class="w-full h-auto block" />
       </div>
 
-      <!-- 텍스트 영역: 부모 섹션에서 패딩을 제어하므로 여기서는 p-0 적용 -->
-      <div class="flex flex-col gap-sp-400 lg:flex-1 lg:py-sp-900 px-0">
+      <!-- 텍스트 영역: 모바일(32px), 태블릿(md:16px), 데스크톱(32px) 간격 정밀 제어 -->
+      <div class="flex flex-col gap-sp-400 md:gap-sp-200 lg:flex-1 lg:py-sp-900 px-0">
         <!-- 메인 제목: Preset 2 (40px, SemiBold, 1.25em, -1.2px) 적용 -->
         <h2 id="infra-title" class="font-overpass font-semibold text-[40px] leading-[1.25] tracking-[-1.2px]">
           State of the Art Infrastructure
         </h2>
-        <!-- 본문 텍스트: Preset 5(16px, Light) 적용 및 모바일에서 가독성을 위해 불투명도 100% 설정 -->
-        <p class="font-overpass font-light text-base leading-[1.75] tracking-[0.5px] text-white opacity-100">
+        <!-- 본문 텍스트: 태블릿(md:540px) 너비 제한 및 중앙 정렬, 데스크톱(lg:제한없음) 복구 적용 -->
+        <p class="font-overpass font-light text-base leading-[1.75] tracking-[0.5px] text-white opacity-100 md:max-w-[540px] md:mx-auto lg:max-w-none lg:mx-0">
           With reliability and speed in mind, worldwide data centers provide the backbone for
           ultra-fast connectivity. This ensures your site will load instantly, no matter where
           your readers are, keeping your site competitive.
@@ -491,8 +499,8 @@
         <div id="laptop-title"
           class="w-full max-w-[318px] mx-auto flex flex-col gap-sp-700 px-0 lg:px-0 lg:max-w-none lg:flex-1">
           <article>
-            <!-- 소제목: brand-blue(#1F3E5A) 색상 및 Preset 3(28px, SemiBold) 적용 -->
-            <h3 class="font-overpass font-semibold text-[28px] leading-none text-brand-blue mb-sp-200">
+            <!-- 소제목: 높이 41px 및 상단 정렬 적용 -->
+            <h3 class="font-overpass font-semibold text-[28px] leading-none text-brand-blue mb-sp-200 h-[41px] flex items-start">
               Free, open, simple
             </h3>
             <!-- 본문: Preset 5(16px, Light, 1.75em, 0.5px) 적용 -->
@@ -504,7 +512,8 @@
             </p>
           </article>
           <article>
-            <h3 class="font-overpass font-semibold text-[28px] leading-none text-brand-blue mb-sp-200">
+            <!-- 소제목: 높이 41px 및 상단 정렬 적용 -->
+            <h3 class="font-overpass font-semibold text-[28px] leading-none text-brand-blue mb-sp-200 h-[41px] flex items-start">
               Powerful tooling
             </h3>
             <p class="font-overpass font-light text-base leading-[1.75] tracking-[0.5px] text-gray-brand">
